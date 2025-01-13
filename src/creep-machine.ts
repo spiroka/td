@@ -7,6 +7,7 @@ import { Game } from './game';
 const defaultContext = {
   x: 0,
   y: 0,
+  type: 'slow' as CreepType,
   isDead: true,
   velocity: 2,
   health: 100
@@ -33,8 +34,9 @@ const creepMachine = setup({
           actions: assign(({ event }) => ({
             x: event.tile.x,
             y: event.tile.y,
+            type: event.creepType,
             isDead: false,
-            velocity: event.creepType === 'slow' ? 0.5 : 1
+            velocity: event.creepType === 'slow' ? 2 : 4
           }))
         }
       }
@@ -85,6 +87,11 @@ function calculateNewPosition(currentPosition: Point, path: Point[], delta: numb
       let tilesTraveled = Math.floor(totalDistance);
       offset = totalDistance - tilesTraveled;
       currentTile = path[tilesTraveled];
+
+      if (tilesTraveled >= path.length - 1) {
+        return path[path.length - 1];
+      }
+
       nextTile = path[tilesTraveled + 1];
       break;
     }

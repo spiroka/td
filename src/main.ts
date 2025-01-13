@@ -4,6 +4,7 @@ import { initCreeps } from './creeps';
 import { Game } from './game';
 import { UI } from './ui';
 import { Tower } from './tower';
+import { EmojiRenderer } from './emoji-renderer';
 
 let game: Game;
 let renderer = canvasRenderer;
@@ -14,13 +15,13 @@ async function init(onProgress: (progress: string) => void) {
   onProgress('Generating map...');
   const map = await generateMap();
 
-  onProgress('Initializing renderer...');
-  await renderer.init();
-
   onProgress('Spawning creeps...');
   await initCreeps();
 
   game = new Game(map);
+
+  onProgress('Initializing renderer...');
+  await renderer.init(game);
 
   tower = new Tower();
   tower.place(game.map.start);
@@ -36,7 +37,7 @@ function gameLoop(timestamp: number) {
   renderer.render(game, delta);
   if (game.state === 'playing') {
     game.update(delta);
-    tower.update(delta, game);
+    //tower.update(delta, game);
   }
   prevTimestamp = timestamp;
 

@@ -6,6 +6,7 @@ import { Game } from './game';
 export class Creep {
   public x: number = 0;
   public y: number = 0;
+  public type: CreepType = 'slow';
   public state: StateValueFrom<typeof creepMachine>;
 
   private actor: Actor<typeof creepMachine>;
@@ -17,6 +18,7 @@ export class Creep {
     this.actor.subscribe(({ context, value }) => {
       this.x = context.x;
       this.y = context.y;
+      this.type = context.type;
       this.state = value;
     });
   }

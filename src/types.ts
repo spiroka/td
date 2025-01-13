@@ -12,7 +12,7 @@ export type TDMap = {
 };
 
 export type Renderer = {
-  init: () => Promise<void>;
+  init: (game: Game) => Promise<void>;
   render: (game: Game, delta: number) => void;
 };
 

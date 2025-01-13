@@ -1,6 +1,7 @@
 import { config } from './config';
 import { Creep } from './creep';
-import { Game, Renderer, TDMap } from './types';
+import { Game } from './game';
+import { Renderer, TDMap } from './types';
 
 let canvas: HTMLCanvasElement = document.createElement('canvas');
 
