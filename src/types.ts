@@ -5,10 +5,15 @@ export type Point = {
   y: number;
 }
 
+export type Tile = {
+  type: 'path' | 'terrain';
+} & Point;
+
 export type TDMap = {
-  start: Point;
-  end: Point;
-  path: Point[];
+  start: Tile;
+  end: Tile;
+  path: Tile[];
+  tiles: Tile[][];
 };
 
 export type Renderer = {

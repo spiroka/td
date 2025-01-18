@@ -1,5 +1,5 @@
 import { config } from './config';
-import { TDMap, Point } from './types';
+import { TDMap, Point, Tile } from './types';
 
 function generateRandomMap() {
   const map = new Array(config.height)
@@ -114,7 +114,29 @@ function asyncGenerateMap(onSuccess: (map: TDMap) => void) {
   const path = aStar(start, end, isWalkable);
 
   if (path) {
-    onSuccess({ start, end, path });
+    let tiles = new Array(config.height).fill(0).map(() => new Array(config.width).fill(0));
+    let pathTiles = path.map(({ x, y }) => {
+      const pathTile = { x, y, type: 'path' };
+      tiles[y][x] = pathTile;
+
+      return pathTile;
+    });
+
+    for (let y = 0; y < config.height; y++) {
+      for (let x = 0; x < config.width; x++) {
+        if (!tiles[y][x]) {
+          const tile = { x, y, type: 'terrain' };
+          tiles[y][x] = tile;
+        }
+      }
+    }
+
+    onSuccess({
+      start: { ...start, type: 'path' },
+      end: { ...end, type: 'path' },
+      path: pathTiles as Tile[],
+      tiles: tiles as Tile[][]
+    });
   }
 
   requestAnimationFrame(() => asyncGenerateMap(onSuccess));

@@ -1,8 +1,8 @@
 import { Actor, createActor, StateValueFrom } from 'xstate';
 
+import type { Point } from './types';
+import type { Game } from './game';
 import { towerMachine } from './tower-machine'
-import { Point } from './types';
-import { Game } from './game';
 
 export class Tower {
   public x: number = 0;

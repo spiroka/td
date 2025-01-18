@@ -5,11 +5,11 @@ import { Game } from './game';
 import { UI } from './ui';
 import { Tower } from './tower';
 import { EmojiRenderer } from './emoji-renderer';
+import { initTowers } from './towers';
 
 let game: Game;
-let renderer = canvasRenderer;
+let renderer = new EmojiRenderer();
 let ui: UI;
-let tower;
 
 async function init(onProgress: (progress: string) => void) {
   onProgress('Generating map...');
@@ -18,13 +18,13 @@ async function init(onProgress: (progress: string) => void) {
   onProgress('Spawning creeps...');
   await initCreeps();
 
+  onProgress('Building towers...');
+  initTowers();
+
   game = new Game(map);
 
   onProgress('Initializing renderer...');
   await renderer.init(game);
-
-  tower = new Tower();
-  tower.place(game.map.start);
 
   onProgress('Initializing UI...');
   ui = new UI(game);
@@ -37,7 +37,6 @@ function gameLoop(timestamp: number) {
   renderer.render(game, delta);
   if (game.state === 'playing') {
     game.update(delta);
-    //tower.update(delta, game);
   }
   prevTimestamp = timestamp;
 

@@ -20,7 +20,8 @@ const creepMachine = setup({
       { type: 'creep.update'; delta: number; game: Game } |
       { type: 'creep.begin' } |
       { type: 'creep.takeDamage'; damage: number } |
-      { type: 'creep.reset' };
+      { type: 'creep.reset' } |
+      { type: 'creep.kill' };
     context: typeof defaultContext;
   }
 }).createMachine({
@@ -52,7 +53,12 @@ const creepMachine = setup({
           actions: assign(({ event, context: self }) => {
             const { game, delta } = event;
             const { path } = game.map;
-            const newPosition = calculateNewPosition({ x: self.x, y: self.y }, path, delta, self.velocity);
+
+            if (getDistance(self, game.map.end) < 1) {
+              game.creepEnter();
+            }
+
+            const newPosition = calculateNewPosition(self, path, delta, self.velocity);
 
             return {
               x: newPosition.x,
@@ -63,12 +69,17 @@ const creepMachine = setup({
         'creep.takeDamage': {
           actions: enqueueActions(({ event, context, enqueue }) => {
             if (context.health - event.damage <= 0) {
-              enqueue.raise({ type: 'creep.reset' });
+              enqueue.raise({ type: 'creep.kill' });
             } else {
               enqueue.assign({ health: context.health - event.damage });
             }
           })
         },
+        'creep.kill': 'dead'
+      }
+    },
+    dead: {
+      on: {
         'creep.reset': 'onBench'
       }
     }

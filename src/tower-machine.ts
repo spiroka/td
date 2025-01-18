@@ -29,8 +29,8 @@ export const towerMachine = setup({
   context: {
     x: 0,
     y: 0,
-    damage: 20,
-    attackSpeed: 0.5,
+    damage: 1,
+    attackSpeed: 1,
     range: 5
   },
   states: {

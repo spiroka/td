@@ -15,5 +15,5 @@ export function spawnCreep(tile: Point, type: CreepType) {
 
   creep?.spawn(tile, type);
 
-  return creep as Creep;
+  return creep!;
 }
