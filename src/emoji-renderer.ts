@@ -85,6 +85,9 @@ export class EmojiRenderer implements Renderer {
       let tile = document.createElement('div');
       tile.setAttribute('style', `
         grid-area: ${y + 1} / ${x + 1} / ${y + 2} / ${x + 2};
+        display: flex;
+        align-items: center;
+        justify-content: center;
       `);
       tile.style.backgroundColor = type === 'path' ? 'brown' : 'green'
 

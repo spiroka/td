@@ -2,6 +2,8 @@ import type { Game } from './game';
 import { config } from './config';
 import { buildTower } from './towers';
 
+import './styles/ui.css';
+
 export class UI {
   private game: Game;
   private container = document.createElement('div');
@@ -22,12 +24,7 @@ export class UI {
       }
     });
     this.game = game;
-    this.container.setAttribute('style', `
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-    `);
+    this.container.classList.add('ui__container');
 
     document.getElementById('game')?.appendChild(this.container);
 
@@ -45,14 +42,17 @@ export class UI {
       }
 
       if (e.key === ' ' && this.game.state === 'paused') {
-        this.play();
+        this.game.play();
       }
     });
   }
 
   private pause = () => {
-    const pauseElement = document.createElement('h1');
-    pauseElement.textContent = 'PAUSED';
+    const pauseElement = document.createElement('div');
+    pauseElement.classList.add('ui__text');
+    const text = document.createElement('h1');
+    text.textContent = 'PAUSED';
+    pauseElement.appendChild(text);
     this.container.replaceChildren(pauseElement);
   }
 
@@ -61,8 +61,11 @@ export class UI {
   }
 
   private gameOver = () => {
-    const gameOverElement = document.createElement('h1');
-    gameOverElement.textContent = 'GAME OVER';
+    const gameOverElement = document.createElement('div');
+    gameOverElement.classList.add('ui__text');
+    const text = document.createElement('h1');
+    text.textContent = 'GAME OVER';
+    gameOverElement.appendChild(text);
     this.container.replaceChildren(gameOverElement);
   }
 
@@ -78,7 +81,6 @@ export class UI {
         let el = document.createElement('div');
         el.setAttribute('style', `
           grid-area: ${y + 1} / ${x + 1} / ${y + 2} / ${x + 2};
-          border: 1px solid white;
         `);
         el.onclick = () => {
           const tower = buildTower(tile);
@@ -89,12 +91,10 @@ export class UI {
     }
 
     let overlay = document.createElement('div');
+    overlay.classList.add('ui__building-overlay');
     overlay.setAttribute('style', `
-      width: 100%;
-      height: 100%;
-      display: grid;
-      grid-template-columns: repeat(${config.width}, 1fr);
-      grid-template-rows: repeat(${config.height}, 1fr);
+      --width: ${config.width};
+      --height: ${config.height};
     `);
 
     overlay.append(...elements);

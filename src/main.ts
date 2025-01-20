@@ -3,7 +3,6 @@ import { canvasRenderer } from './canvas-renderer';
 import { initCreeps } from './creeps';
 import { Game } from './game';
 import { UI } from './ui';
-import { Tower } from './tower';
 import { EmojiRenderer } from './emoji-renderer';
 import { initTowers } from './towers';
 
