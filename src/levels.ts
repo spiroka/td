@@ -7,8 +7,14 @@ type LevelConfig = {
 export const levels: LevelConfig[] = [
   {
     creeps: {
-      slow: 3,
-      fast: 2
+      slow: 1,
+      fast: 1
+    }
+  },
+  {
+    creeps: {
+      slow: 5,
+      fast: 3
     }
   }
 ];

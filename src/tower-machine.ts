@@ -29,9 +29,9 @@ export const towerMachine = setup({
   context: {
     x: 0,
     y: 0,
-    damage: 1,
-    attackSpeed: 1,
-    range: 5
+    damage: 25,
+    attackSpeed: 1.5,
+    range: 10
   },
   states: {
     idle: {

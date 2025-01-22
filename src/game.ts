@@ -10,6 +10,7 @@ export class Game {
   public creeps: Creep[] = [];
   public towers: Tower[] = [];
   public state: StateValueFrom<typeof gameMachine>;
+  public lives?: number;
 
   private actor: Actor<typeof gameMachine>;
   private updateCallbacks: Array<(game: Game) => void> = [];
@@ -18,12 +19,15 @@ export class Game {
     this.map = map;
     this.actor = createActor(gameMachine);
     this.actor.start();
-    this.state = this.actor.getSnapshot().value;
+    const { value: state, context: { lives } } = this.actor.getSnapshot();
+    this.state = state;
+    this.lives = lives;
 
     this.actor.subscribe(({ value, context }) => {
       this.state = value;
       this.creeps = context.creeps || [];
       this.towers = context.towers || [];
+      this.lives = context.lives;
 
       this.updateCallbacks.forEach(cb => cb(this));
     });

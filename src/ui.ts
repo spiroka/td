@@ -6,8 +6,10 @@ import './styles/ui.css';
 
 export class UI {
   private game: Game;
-  private container = document.createElement('div');
+  private uiContainer = document.getElementById('ui');
+  private overlayContainer = document.createElement('div');
   private currentState: Game['state'];
+  private livesEl = document.createElement('div');
 
   constructor(game: Game) {
     this.currentState = game.state;
@@ -22,11 +24,18 @@ export class UI {
       } else if (state === 'building' && this.currentState !== 'building') {
         this.startBuilding();
       }
+
+      this.currentState = state;
+      if (game.lives != null) {
+        this.livesEl.textContent = `${game.lives} lives left`;
+      }
     });
     this.game = game;
-    this.container.classList.add('ui__container');
+    this.overlayContainer.classList.add('ui__container');
+    this.livesEl.classList.add('ui__lives');
+    this.uiContainer?.appendChild(this.livesEl);
 
-    document.getElementById('game')?.appendChild(this.container);
+    document.getElementById('game')?.appendChild(this.overlayContainer);
 
     this.initKeyboard();
   }
@@ -53,11 +62,11 @@ export class UI {
     const text = document.createElement('h1');
     text.textContent = 'PAUSED';
     pauseElement.appendChild(text);
-    this.container.replaceChildren(pauseElement);
+    this.overlayContainer.replaceChildren(pauseElement);
   }
 
   private play = () => {
-    this.container.replaceChildren();
+    this.overlayContainer.replaceChildren();
   }
 
   private gameOver = () => {
@@ -66,7 +75,7 @@ export class UI {
     const text = document.createElement('h1');
     text.textContent = 'GAME OVER';
     gameOverElement.appendChild(text);
-    this.container.replaceChildren(gameOverElement);
+    this.overlayContainer.replaceChildren(gameOverElement);
   }
 
   private startBuilding = () => {
@@ -83,6 +92,7 @@ export class UI {
           grid-area: ${y + 1} / ${x + 1} / ${y + 2} / ${x + 2};
         `);
         el.onclick = () => {
+          el.remove();
           const tower = buildTower(tile);
           this.game.placeTower(tower);
         };
@@ -98,6 +108,6 @@ export class UI {
     `);
 
     overlay.append(...elements);
-    this.container.replaceChildren(overlay);
+    this.overlayContainer.replaceChildren(overlay);
   }
 }

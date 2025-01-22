@@ -69,6 +69,7 @@ export class EmojiRenderer implements Renderer {
         display: flex;
         align-items: center;
         justify-content: center;
+        background-color: green;
       `);
     });
   }

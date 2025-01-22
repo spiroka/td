@@ -27,3 +27,10 @@
 .ui__building-overlay > div {
   box-shadow: inset 0 0 0 2px rgb(0 0 0 / 0.5);
 }
+
+.ui__lives {
+  grid-area: c;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}

@@ -37,7 +37,8 @@ const creepMachine = setup({
             y: event.tile.y,
             type: event.creepType,
             isDead: false,
-            velocity: event.creepType === 'slow' ? 2 : 4
+            velocity: event.creepType === 'slow' ? 1 : 2,
+            health: event.creepType === 'slow' ? 100 : 50
           }))
         }
       }
@@ -54,7 +55,7 @@ const creepMachine = setup({
             const { game, delta } = event;
             const { path } = game.map;
 
-            if (getDistance(self, game.map.end) < 1) {
+            if (getDistance(self, game.map.end) < 0.5) {
               game.creepEnter();
             }
 
