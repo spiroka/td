@@ -58,10 +58,9 @@ export class EmojiRenderer implements Renderer {
       }
 
       el.setAttribute('style', `
-        grid-area: ${Math.floor(creep.y + 1)} / ${Math.floor(creep.x + 1)} / ${Math.floor(creep.y + 2)} / ${Math.floor(creep.x + 2)};
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        position: absolute;
+        top: calc(${(creep.y / config.height) * 100}% + 0.5em);
+        left: calc(${(creep.x / config.width) * 100}% + 0.5em);
       `);
     });
   };
