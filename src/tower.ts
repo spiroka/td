@@ -29,4 +29,8 @@ export class Tower {
   public place = (tile: Point) => {
     this.actor.send({ type: 'tower.place', tile });
   };
+
+  public reset = () => {
+    this.actor.send({ type: 'tower.reset' });
+  };
 }

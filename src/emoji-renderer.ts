@@ -8,8 +8,20 @@ export class EmojiRenderer implements Renderer {
   private container = document.createElement('div');
   private creepElements = new WeakMap<Creep, HTMLDivElement>();
   private towerElements = new WeakMap<Tower, HTMLDivElement>();
+  private currentState?: Game['state'];
 
   public init = async (game: Game) => {
+    this.currentState = game.state;
+
+    game.onUpdate(({ state }) => {
+      if (state === 'initial' && this.currentState !== 'initial') {
+        this.container.querySelectorAll('.creep').forEach(el => el.remove());
+        this.container.querySelectorAll('.tower').forEach(el => el.remove());
+      }
+
+      this.currentState = state;
+    });
+
     this.container.setAttribute('style', `
       position: absolute;
       inset: 0;
@@ -33,6 +45,7 @@ export class EmojiRenderer implements Renderer {
 
       if (!el) {
         el = document.createElement('div');
+        el.classList.add('creep');
 
         this.container.appendChild(el);
         this.creepElements.set(creep, el);
@@ -59,7 +72,9 @@ export class EmojiRenderer implements Renderer {
 
       if (!el) {
         el = document.createElement('div');
+        el.classList.add('tower');
         el.textContent = '🔫';
+
         this.container.appendChild(el);
         this.towerElements.set(tower, el);
       }

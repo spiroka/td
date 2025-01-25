@@ -17,3 +17,8 @@ export function spawnCreep(tile: Point, type: CreepType) {
 
   return creep!;
 }
+
+export function returnCreep(creep: Creep) {
+  creep.reset();
+  creeps.push(creep);
+}

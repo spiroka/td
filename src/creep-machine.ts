@@ -76,7 +76,8 @@ const creepMachine = setup({
             }
           })
         },
-        'creep.kill': 'dead'
+        'creep.kill': 'dead',
+        'creep.reset': 'onBench'
       }
     },
     dead: {

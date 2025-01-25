@@ -5,7 +5,8 @@ import type { CreepType, TDMap } from './types';
 import type { Tower } from './tower';
 import { ticker } from './utils';
 import { levels } from './levels';
-import { spawnCreep } from './creeps';
+import { returnCreep, spawnCreep } from './creeps';
+import { demolishTower } from './towers';
 
 type Context = {
   creeps?: Creep[];
@@ -112,7 +113,18 @@ export const gameMachine = setup({
           })
         },
         'game.over': 'over',
-        'game.reset': 'initial'
+        'game.reset': {
+          target: 'initial',
+          actions: assign(({ context: { creeps, towers } }) => {
+            creeps?.forEach(returnCreep);
+            towers?.forEach(demolishTower);
+
+            return {
+              creeps: [],
+              towers: []
+            };
+          })
+        }
       }
     },
     over: {}

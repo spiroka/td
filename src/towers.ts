@@ -15,3 +15,8 @@ export function buildTower(tile: Point) {
 
   return tower!;
 }
+
+export function demolishTower(tower: Tower) {
+  tower.reset();
+  towers.push(tower);
+}

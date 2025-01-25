@@ -21,7 +21,8 @@ export const towerMachine = setup({
       { type: 'tower.place'; tile: Point } |
       { type: 'tower.update'; delta: number; game: Game } |
       { type: 'tower.attack'; target: Creep } |
-      { type: 'tower.targetLost' };
+      { type: 'tower.targetLost' } |
+      { type: 'tower.reset' };
     context: Context;
   }
 }).createMachine({
@@ -76,7 +77,8 @@ export const towerMachine = setup({
             target: event.target
           })),
           target: 'attacking'
-        }
+        },
+        'tower.reset': 'idle'
       }
     },
     attacking: {
@@ -103,7 +105,8 @@ export const towerMachine = setup({
             target: undefined,
             attackTicker: undefined
           })
-        }
+        },
+        'tower.reset': 'idle'
       }
     }
   }

@@ -38,4 +38,8 @@ export class Creep {
   public takeDamage = (damage: number) => {
     this.actor.send({ type: 'creep.takeDamage', damage });
   };
+
+  public reset = () => {
+    this.actor.send({ type: 'creep.reset' });
+  };
 }
