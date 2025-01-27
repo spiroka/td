@@ -6,9 +6,12 @@ import { Renderer } from './types';
 
 export class EmojiRenderer implements Renderer {
   private container = document.createElement('div');
+  private particleContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   private creepElements = new WeakMap<Creep, HTMLDivElement>();
   private towerElements = new WeakMap<Tower, HTMLDivElement>();
+  private projectiles = new WeakMap<Tower, SVGPathElement>();
   private currentState?: Game['state'];
+  private tileSize: number = 0;
 
   public init = async (game: Game) => {
     this.currentState = game.state;
@@ -29,7 +32,14 @@ export class EmojiRenderer implements Renderer {
       grid-template-columns: repeat(${config.width}, 1fr);
       grid-template-rows: repeat(${config.height}, 1fr);
     `);
+    this.particleContainer.setAttribute('style', `
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    `);
     document.getElementById('game')?.appendChild(this.container);
+    document.getElementById('game')?.appendChild(this.particleContainer);
+    this.tileSize = this.container.getBoundingClientRect().width / config.width;
 
     this.renderMap(game);
   };
@@ -76,6 +86,29 @@ export class EmojiRenderer implements Renderer {
 
         this.container.appendChild(el);
         this.towerElements.set(tower, el);
+      }
+
+      if (tower.target) {
+        let path = this.projectiles.get(tower);
+
+        if (!path) {
+          path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('stroke', 'white');
+          path.setAttribute('stroke-dasharray', '1 10')
+          this.particleContainer.appendChild(path);
+          this.projectiles.set(tower, path);
+        }
+
+        path.setAttribute('d', `
+          M ${tower.x * this.tileSize + this.tileSize / 2} ${tower.y * this.tileSize + this.tileSize / 2}
+          L ${tower.target.x * this.tileSize + this.tileSize / 2} ${tower.target.y * this.tileSize + this.tileSize / 2}
+        `);
+      } else {
+        let path = this.projectiles.get(tower);
+
+        if (path) {
+          path.setAttribute('d', '');
+        }
       }
 
       el.setAttribute('style', `

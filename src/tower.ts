@@ -3,10 +3,12 @@ import { Actor, createActor, StateValueFrom } from 'xstate';
 import type { Point } from './types';
 import type { Game } from './game';
 import { towerMachine } from './tower-machine'
+import { Creep } from './creep';
 
 export class Tower {
   public x: number = 0;
   public y: number = 0;
+  public target?: Creep;
   public state: StateValueFrom<typeof towerMachine>;
 
   private actor: Actor<typeof towerMachine>;
@@ -18,6 +20,7 @@ export class Tower {
     this.actor.subscribe(({ context, value }) => {
       this.x = context.x;
       this.y = context.y;
+      this.target = context.target;
       this.state = value;
     });
   }
