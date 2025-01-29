@@ -57,6 +57,7 @@ export class Game {
 
   public onUpdate(cb: (game: Game) => void) {
     this.updateCallbacks.push(cb);
+    cb(this);
   }
 
   public placeTower(tower: Tower) {

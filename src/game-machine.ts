@@ -33,7 +33,7 @@ export const gameMachine = setup({
   id: 'game',
   initial: 'initial',
   context: {
-    lives: 1
+    lives: 10
   },
   states: {
     initial: {

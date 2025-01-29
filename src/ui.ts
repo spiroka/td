@@ -31,7 +31,8 @@ export class UI {
       }
     });
     this.game = game;
-    this.overlayContainer.classList.add('ui__container');
+    this.uiContainer?.classList.add('ui__container');
+    this.overlayContainer.classList.add('overlay__container');
     this.livesEl.classList.add('ui__lives');
     this.uiContainer?.appendChild(this.livesEl);
 

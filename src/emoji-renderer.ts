@@ -9,7 +9,7 @@ export class EmojiRenderer implements Renderer {
   private particleContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   private creepElements = new WeakMap<Creep, HTMLDivElement>();
   private towerElements = new WeakMap<Tower, HTMLDivElement>();
-  private projectiles = new WeakMap<Tower, SVGPathElement>();
+  private projectiles = new Map<Tower, SVGPathElement>();
   private currentState?: Game['state'];
   private tileSize: number = 0;
 
@@ -20,6 +20,10 @@ export class EmojiRenderer implements Renderer {
       if (state === 'initial' && this.currentState !== 'initial') {
         this.container.querySelectorAll('.creep').forEach(el => el.remove());
         this.container.querySelectorAll('.tower').forEach(el => el.remove());
+
+        for (let projectile of this.projectiles.values()) {
+          projectile.setAttribute('d', '');
+        }
       }
 
       this.currentState = state;
