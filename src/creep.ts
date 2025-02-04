@@ -1,6 +1,6 @@
 import { Actor, createActor, StateValueFrom } from 'xstate';
 import creepMachine from './creep-machine';
-import { CreepType, Point } from './types';
+import { CreepEffect, CreepType, Point } from './types';
 import { Game } from './game';
 
 export class Creep {
@@ -8,6 +8,7 @@ export class Creep {
   public y: number = 0;
   public type: CreepType = 'slow';
   public state: StateValueFrom<typeof creepMachine>;
+  public effects: CreepEffect[] = [];
 
   private actor: Actor<typeof creepMachine>;
 
@@ -20,6 +21,7 @@ export class Creep {
       this.y = context.y;
       this.type = context.type;
       this.state = value;
+      this.effects = context.effects;
     });
   }
 
@@ -29,6 +31,7 @@ export class Creep {
 
   public update = (delta: number, game: Game) => {
     this.actor.send({ type: 'creep.update', delta, game });
+    this.effects.forEach((effect) => effect.update(delta, this));
   };
 
   public begin = () => {
@@ -41,5 +44,17 @@ export class Creep {
 
   public reset = () => {
     this.actor.send({ type: 'creep.reset' });
+  };
+
+  public applyEffect = (effect: CreepEffect) => {
+    effect.apply(this);
+  }
+
+  public addEffect = (effect: CreepEffect) => {
+    this.actor.send({ type: 'creep.addEffect', effect });
+  };
+
+  public removeEffect = (effect: CreepEffect) => {
+    this.actor.send({ type: 'creep.removeEffect', effect });
   };
 }

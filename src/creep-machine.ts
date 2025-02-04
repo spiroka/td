@@ -1,15 +1,22 @@
 import { assign, enqueueActions, setup } from 'xstate';
 
-import { CreepType, Point } from './types';
+import { CreepEffect, CreepType, Point } from './types';
 import { getDistance } from './utils';
 import { Game } from './game';
+import { isSlowEffect } from './creep-effects';
 
 const defaultContext = {
   x: 0,
   y: 0,
   type: 'slow' as CreepType,
   isDead: true,
+  effects: [] as CreepEffect[],
   velocity: 2,
+  getVelocity() {
+    const slowEffect = this.effects.find(isSlowEffect);
+
+    return this.velocity * (slowEffect ? slowEffect.multiplier : 1);
+  },
   health: 100
 };
 
@@ -21,7 +28,9 @@ const creepMachine = setup({
       { type: 'creep.begin' } |
       { type: 'creep.takeDamage'; damage: number } |
       { type: 'creep.reset' } |
-      { type: 'creep.kill' };
+      { type: 'creep.kill' } |
+      { type: 'creep.addEffect', effect: CreepEffect } |
+      { type: 'creep.removeEffect', effect: CreepEffect };
     context: typeof defaultContext;
   }
 }).createMachine({
@@ -59,7 +68,7 @@ const creepMachine = setup({
               game.creepEnter();
             }
 
-            const newPosition = calculateNewPosition(self, path, delta, self.velocity);
+            const newPosition = calculateNewPosition(self, path, delta, self.getVelocity());
 
             return {
               x: newPosition.x,
@@ -75,6 +84,16 @@ const creepMachine = setup({
               enqueue.assign({ health: context.health - event.damage });
             }
           })
+        },
+        'creep.addEffect': {
+          actions: assign(({ event, context }) => ({
+            effects: context.effects.concat(event.effect)
+          }))
+        },
+        'creep.removeEffect': {
+          actions: assign(({ event, context }) => ({
+            effects: context.effects.filter((effect) => effect !== event.effect)
+          }))
         },
         'creep.kill': 'dead',
         'creep.reset': 'onBench'

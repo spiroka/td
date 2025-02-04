@@ -4,6 +4,7 @@ import { Point } from './types';
 import { Game } from './game';
 import { Creep } from './creep';
 import { getDistance, ticker } from './utils';
+import { slow } from './creep-effects';
 
 type Context = {
   x: number;
@@ -30,8 +31,8 @@ export const towerMachine = setup({
   context: {
     x: 0,
     y: 0,
-    damage: 25,
-    attackSpeed: 1.5,
+    damage: 5,
+    attackSpeed: 0.5,
     range: 10
   },
   states: {
@@ -85,6 +86,7 @@ export const towerMachine = setup({
       entry: assign(({ context }) => ({
         attackTicker: ticker(() => {
           context.target?.takeDamage(context.damage);
+          context.target?.applyEffect(slow(2000, 0.5));
         }, context.attackSpeed / 1 * 1000)
       })),
       on: {

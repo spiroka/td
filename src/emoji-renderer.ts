@@ -1,5 +1,6 @@
 import { config } from './config';
 import { Creep } from './creep';
+import { isSlowEffect } from './creep-effects';
 import { Game } from './game';
 import { Tower } from './tower';
 import { Renderer } from './types';
@@ -75,6 +76,7 @@ export class EmojiRenderer implements Renderer {
         position: absolute;
         top: calc(${(creep.y / config.height) * 100}% + 0.5em);
         left: calc(${(creep.x / config.width) * 100}% + 0.5em);
+        filter: ${creep.effects.some(isSlowEffect) ? 'hue-rotate(180deg)' : 'none'};
       `);
     });
   };

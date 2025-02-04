@@ -137,6 +137,8 @@ function asyncGenerateMap(onSuccess: (map: TDMap) => void) {
       path: pathTiles as Tile[],
       tiles: tiles as Tile[][]
     });
+
+    return;
   }
 
   requestAnimationFrame(() => asyncGenerateMap(onSuccess));

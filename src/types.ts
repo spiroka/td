@@ -1,4 +1,5 @@
-import { Game } from './game';
+import type { Creep } from './creep';
+import type { Game } from './game';
 
 export type Point = {
   x: number;
@@ -22,3 +23,18 @@ export type Renderer = {
 };
 
 export type CreepType = 'slow' | 'fast';
+
+export type CreepEffect = {
+  type: string;
+  apply: (creep: Creep) => void;
+  update: (delta: number, creep: Creep) => void;
+};
+
+export type CreepEffectWithDuration = CreepEffect & {
+  timeLeft: number;
+};
+
+export type SlowEffect = CreepEffectWithDuration & {
+  type: 'slow';
+  multiplier: number;
+};
