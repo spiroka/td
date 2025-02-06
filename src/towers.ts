@@ -1,4 +1,4 @@
-import type { Point } from './types';
+import type { Point, TowerType } from './types';
 import { Tower } from './tower';
 
 let towers: Tower[];
@@ -8,10 +8,10 @@ export function initTowers() {
   towers = init.map(() => new Tower());
 }
 
-export function buildTower(tile: Point) {
+export function buildTower(tile: Point, type: TowerType) {
   const tower = towers.shift();
 
-  tower?.place(tile);
+  tower?.place(tile, type);
 
   return tower!;
 }

@@ -1,6 +1,6 @@
 import { Actor, createActor, StateValueFrom } from 'xstate';
 
-import type { Point } from './types';
+import type { Point, TowerType } from './types';
 import type { Game } from './game';
 import { towerMachine } from './tower-machine'
 import { Creep } from './creep';
@@ -10,6 +10,7 @@ export class Tower {
   public y: number = 0;
   public target?: Creep;
   public state: StateValueFrom<typeof towerMachine>;
+  public type: TowerType = 'basic';
 
   private actor: Actor<typeof towerMachine>;
 
@@ -22,6 +23,7 @@ export class Tower {
       this.y = context.y;
       this.target = context.target;
       this.state = value;
+      this.type = context.type;
     });
   }
 
@@ -29,8 +31,8 @@ export class Tower {
     this.actor.send({ type: 'tower.update', delta, game });
   };
 
-  public place = (tile: Point) => {
-    this.actor.send({ type: 'tower.place', tile });
+  public place = (tile: Point, type: TowerType) => {
+    this.actor.send({ type: 'tower.place', tile, towerType: type });
   };
 
   public reset = () => {

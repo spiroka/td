@@ -94,7 +94,7 @@ export class UI {
         `);
         el.onclick = () => {
           el.remove();
-          const tower = buildTower(tile);
+          const tower = buildTower(tile, 'basic');
           this.game.placeTower(tower);
         };
         elements.push(el);

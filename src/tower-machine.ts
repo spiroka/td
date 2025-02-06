@@ -1,6 +1,6 @@
 import { assign, enqueueActions, setup } from 'xstate';
 
-import { Point } from './types';
+import { Point, TowerType } from './types';
 import { Game } from './game';
 import { Creep } from './creep';
 import { getDistance, ticker } from './utils';
@@ -9,6 +9,7 @@ import { slow } from './creep-effects';
 type Context = {
   x: number;
   y: number;
+  type: TowerType;
   damage: number;
   attackSpeed: number;
   range: number;
@@ -19,7 +20,7 @@ type Context = {
 export const towerMachine = setup({
   types: {} as {
     events:
-      { type: 'tower.place'; tile: Point } |
+      { type: 'tower.place'; tile: Point, towerType: TowerType } |
       { type: 'tower.update'; delta: number; game: Game } |
       { type: 'tower.attack'; target: Creep } |
       { type: 'tower.targetLost' } |
@@ -31,7 +32,8 @@ export const towerMachine = setup({
   context: {
     x: 0,
     y: 0,
-    damage: 5,
+    type: 'basic',
+    damage: 25,
     attackSpeed: 0.5,
     range: 10
   },
@@ -42,7 +44,8 @@ export const towerMachine = setup({
           target: 'ready',
           actions: assign(({ event }) => ({
             x: event.tile.x,
-            y: event.tile.y
+            y: event.tile.y,
+            type: event.towerType
           }))
         }
       }

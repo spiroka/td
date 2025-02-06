@@ -59,7 +59,7 @@ export const gameMachine = setup({
                   break;
                 }
               }
-            }, 1000);
+            }, 500);
 
             return { map: event.map, creeps, creepTicker };
           }),
