@@ -1,31 +1,57 @@
+import { Actor, createActor, StateValueFrom } from 'xstate';
+
 import type { Game } from './game';
+import type { TowerType } from './types';
 import { config } from './config';
 import { buildTower } from './towers';
+import { uiMachine } from './ui-machine';
 
 import './styles/ui.css';
 
 export class UI {
   private game: Game;
-  private uiContainer = document.getElementById('ui');
+  private uiContainer = document.getElementById('ui')!;
   private overlayContainer = document.createElement('div');
-  private currentState: Game['state'];
+  private toolbarContainer = document.getElementById('toolbar')!;
+  private gameState: Game['state'];
   private livesEl = document.createElement('div');
+  private actor: Actor<typeof uiMachine>;
+  private state: StateValueFrom<typeof uiMachine>;
+  private selectedTowerType?: TowerType;
+  private towersLeft: number;
 
   constructor(game: Game) {
-    this.currentState = game.state;
+    this.gameState = game.state;
+    this.actor = createActor(uiMachine);
+    this.actor.start();
+    this.state = this.actor.getSnapshot().value;
+    this.towersLeft = this.actor.getSnapshot().context.towersLeft;
+
+    this.actor.subscribe(({ context, value }) => {
+      if (value === 'building' && this.state !== 'building') {
+        this.hideBuildingOverlay();
+        this.showTowers();
+      } else if (value === 'placingTower' && this.state !== 'placingTower') {
+        this.showBuildingOverlay();
+      }
+
+      this.state = value;
+      this.towersLeft = context.towersLeft;
+      this.selectedTowerType = context.selectedTowerType;
+    });
 
     game.onUpdate(({ state }) => {
-      if (state === 'over' && this.currentState !== 'over') {
+      if (state === 'over' && this.gameState !== 'over') {
         this.gameOver();
-      } else if (state === 'paused' && this.currentState !== 'paused') {
+      } else if (state === 'paused' && this.gameState !== 'paused') {
         this.pause();
-      } else if (state === 'playing' && this.currentState !== 'playing') {
+      } else if (state === 'playing' && this.gameState !== 'playing') {
         this.play();
-      } else if (state === 'building' && this.currentState !== 'building') {
+      } else if (state === 'building' && this.gameState !== 'building') {
         this.startBuilding();
       }
 
-      this.currentState = state;
+      this.gameState = state;
       if (game.lives != null) {
         this.livesEl.textContent = `${game.lives} lives left`;
       }
@@ -55,7 +81,7 @@ export class UI {
         this.game.play();
       }
     });
-  }
+  };
 
   private pause = () => {
     const pauseElement = document.createElement('div');
@@ -64,11 +90,11 @@ export class UI {
     text.textContent = 'PAUSED';
     pauseElement.appendChild(text);
     this.overlayContainer.replaceChildren(pauseElement);
-  }
+  };
 
   private play = () => {
     this.overlayContainer.replaceChildren();
-  }
+  };
 
   private gameOver = () => {
     const gameOverElement = document.createElement('div');
@@ -77,9 +103,28 @@ export class UI {
     text.textContent = 'GAME OVER';
     gameOverElement.appendChild(text);
     this.overlayContainer.replaceChildren(gameOverElement);
-  }
+  };
 
   private startBuilding = () => {
+    this.actor.send({ type: 'ui.startBuilding' });
+  };
+
+  private showTowers = () => {
+    this.toolbarContainer.replaceChildren();
+    this.toolbarContainer.className = 'tower-toolbar';
+
+    (['basic', 'ice'] as const).forEach(type => {
+      const el = document.createElement('div');
+      el.textContent = type;
+      el.className = 'tower-toolbar__tower';
+      el.onclick = () => {
+        this.actor.send({ type: 'ui.selectTower', towerType: type });
+      };
+      this.toolbarContainer.appendChild(el);
+    });
+  };
+
+  private showBuildingOverlay = () => {
     const elements = [];
     const tiles = this.game.map.tiles.flat();
 
@@ -94,8 +139,14 @@ export class UI {
         `);
         el.onclick = () => {
           el.remove();
-          const tower = buildTower(tile, 'basic');
+          const tower = buildTower(tile, this.selectedTowerType!);
           this.game.placeTower(tower);
+          this.actor.send({ type: 'ui.placeTower' });
+
+          if (this.towersLeft === 0) {
+            this.actor.send({ type: 'ui.finishBuilding' });
+            this.game.play();
+          }
         };
         elements.push(el);
       }
@@ -110,5 +161,9 @@ export class UI {
 
     overlay.append(...elements);
     this.overlayContainer.replaceChildren(overlay);
-  }
+  };
+
+  private hideBuildingOverlay = () => {
+    this.overlayContainer.replaceChildren();
+  };
 }

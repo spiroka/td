@@ -19,7 +19,7 @@ export class EmojiRenderer implements Renderer {
     this.currentState = game.state;
 
     game.onUpdate(({ state }) => {
-      if (state === 'initial' && this.currentState !== 'initial') {
+      if (state === 'building' && this.currentState !== 'building') {
         this.container.querySelectorAll('.creep').forEach(el => el.remove());
         this.container.querySelectorAll('.tower').forEach(el => el.remove());
 
@@ -35,8 +35,8 @@ export class EmojiRenderer implements Renderer {
     this.particleContainer.classList.add('particle-container');
 
     this.container.setAttribute('style', `
-      --width: ${config.width}px;
-      --height: ${config.height}px;
+      --width: ${config.width};
+      --height: ${config.height};
     `);
     document.getElementById('game')?.appendChild(this.container);
     document.getElementById('game')?.appendChild(this.particleContainer);
@@ -155,7 +155,8 @@ const creepTypeEmojiMap: Record<CreepType, string> = {
 };
 
 const towerTypeEmojiMap: Record<TowerType, string> = {
-  basic: '🔫'
+  basic: '🔫',
+  ice: '🧊'
 };
 
 const effectClassMap: Record<CreepEffect['type'], string> = {

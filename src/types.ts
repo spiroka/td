@@ -39,4 +39,4 @@ export type SlowEffect = CreepEffectWithDuration & {
   multiplier: number;
 };
 
-export type TowerType = 'basic';
+export type TowerType = 'basic' | 'ice';

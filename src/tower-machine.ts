@@ -1,6 +1,6 @@
 import { assign, enqueueActions, setup } from 'xstate';
 
-import { Point, TowerType } from './types';
+import { CreepEffect, Point, TowerType } from './types';
 import { Game } from './game';
 import { Creep } from './creep';
 import { getDistance, ticker } from './utils';
@@ -45,7 +45,8 @@ export const towerMachine = setup({
           actions: assign(({ event }) => ({
             x: event.tile.x,
             y: event.tile.y,
-            type: event.towerType
+            type: event.towerType,
+            ...towerTypeTemplates[event.towerType]
           }))
         }
       }
@@ -89,7 +90,12 @@ export const towerMachine = setup({
       entry: assign(({ context }) => ({
         attackTicker: ticker(() => {
           context.target?.takeDamage(context.damage);
-          context.target?.applyEffect(slow(2000, 0.5));
+
+          const effectCreator = effectCreatorByType[context.type];
+
+          if (effectCreator) {
+            context.target?.applyEffect(effectCreator());
+          }
         }, context.attackSpeed / 1 * 1000)
       })),
       on: {
@@ -116,3 +122,20 @@ export const towerMachine = setup({
     }
   }
 });
+
+const towerTypeTemplates = {
+  basic: {
+    damage: 25,
+    attackSpeed: 0.5,
+    range: 10
+  },
+  ice: {
+    damage: 10,
+    attackSpeed: 0.5,
+    range: 10
+  }
+};
+
+const effectCreatorByType: Partial<Record<TowerType, () => CreepEffect>> = {
+  ice: () => slow(2000, 0.5)
+};

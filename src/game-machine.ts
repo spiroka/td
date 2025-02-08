@@ -39,30 +39,7 @@ export const gameMachine = setup({
     initial: {
       on: {
         'game.start': {
-          actions: assign(({ event }) => {
-            const levelConfig = levels.shift();
-            let creeps = Object.entries(levelConfig!.creeps)
-              .flatMap(([type, count]) => {
-                let creepsArray = [];
-
-                for (let i = 0; i < count; i++) {
-                  creepsArray.push(spawnCreep(event.map.start, type as CreepType));
-                }
-
-                return creepsArray;
-              });
-
-            const creepTicker = ticker(() => {
-              for (let creep of creeps) {
-                if (creep.state === 'ready') {
-                  creep.begin();
-                  break;
-                }
-              }
-            }, 500);
-
-            return { map: event.map, creeps, creepTicker };
-          }),
+          actions: assign(({ event }) => ({ map: event.map })),
           target: 'building'
         }
       }
@@ -80,13 +57,35 @@ export const gameMachine = setup({
             towers.push(event.tower);
 
             enqueue.assign({ towers });
-
-            if (towers.length === 3) {
-              enqueue.raise({ type: 'game.play' });
-            }
           })
         },
-        'game.play': 'playing'
+        'game.play': {
+          actions: assign(({ context: { map } }) => {
+            const levelConfig = levels.shift();
+            let creeps = Object.entries(levelConfig!.creeps)
+              .flatMap(([type, count]) => {
+                let creepsArray = [];
+
+                for (let i = 0; i < count; i++) {
+                  creepsArray.push(spawnCreep(map!.start, type as CreepType));
+                }
+
+                return creepsArray;
+              });
+
+            const creepTicker = ticker(() => {
+              for (let creep of creeps) {
+                if (creep.state === 'ready') {
+                  creep.begin();
+                  break;
+                }
+              }
+            }, 500);
+
+            return { creeps, creepTicker };
+          }),
+          target: 'playing'
+        }
       }
     },
     playing: {
@@ -114,7 +113,7 @@ export const gameMachine = setup({
         },
         'game.over': 'over',
         'game.reset': {
-          target: 'initial',
+          target: 'building',
           actions: assign(({ context: { creeps, towers } }) => {
             creeps?.forEach(returnCreep);
             towers?.forEach(demolishTower);

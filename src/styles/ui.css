@@ -43,3 +43,15 @@
   align-items: flex-end;
   justify-content: flex-end;
 }
+
+.tower-toolbar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+
+  .tower-toolbar__tower {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
