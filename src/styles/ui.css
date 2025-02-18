@@ -10,8 +10,8 @@
   color: white;
   display: grid;
   grid-template-areas:
-    'a a a'
-    'b b c';
+    'x x a'
+    'x x c';
 }
 
 .ui__text {
@@ -39,6 +39,13 @@
 
 .ui__lives {
   grid-area: c;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.ui__money {
+  grid-area: a;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;

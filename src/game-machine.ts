@@ -14,6 +14,7 @@ type Context = {
   map?: TDMap;
   creepTicker?: ReturnType<typeof ticker>;
   lives: number;
+  money: number;
 };
 
 export const gameMachine = setup({
@@ -26,14 +27,16 @@ export const gameMachine = setup({
       { type: 'game.creepEnter' } |
       { type: 'game.over' } |
       { type: 'game.placeTower', tower: Tower } |
-      { type: 'game.reset' };
+      { type: 'game.reset' } |
+      { type: 'game.creepDied', creep: Creep };
     context: Context;
   }
 }).createMachine({
   id: 'game',
   initial: 'initial',
   context: {
-    lives: 10
+    lives: 10,
+    money: 0
   },
   states: {
     initial: {
@@ -67,7 +70,8 @@ export const gameMachine = setup({
                 let creepsArray = [];
 
                 for (let i = 0; i < count; i++) {
-                  creepsArray.push(spawnCreep(map!.start, type as CreepType));
+                  let creep = spawnCreep(map!.start, type as CreepType);
+                  creepsArray.push(creep);
                 }
 
                 return creepsArray;
@@ -109,6 +113,13 @@ export const gameMachine = setup({
             if (lives === 0) {
               enqueue.raise({ type: 'game.over' });
             }
+          })
+        },
+        'game.creepDied': {
+          actions: assign(({ event, context }) => {
+            return {
+              money: context.money + event.creep.reward
+            };
           })
         },
         'game.over': 'over',

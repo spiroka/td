@@ -17,7 +17,8 @@ const defaultContext = {
 
     return this.velocity * (slowEffect ? slowEffect.multiplier : 1);
   },
-  health: 100
+  health: 100,
+  reward: 100
 };
 
 const creepMachine = setup({
@@ -46,8 +47,7 @@ const creepMachine = setup({
             y: event.tile.y,
             type: event.creepType,
             isDead: false,
-            velocity: event.creepType === 'slow' ? 1 : 2,
-            health: event.creepType === 'slow' ? 100 : 50
+            ...creepTypeTemplates[event.creepType]
           }))
         }
       }
@@ -142,5 +142,18 @@ function calculateNewPosition(currentPosition: Point, path: Point[], delta: numb
     y: currentTile!.y + distanceY
   };
 }
+
+const creepTypeTemplates: Record<CreepType, Partial<typeof defaultContext>> = {
+  slow: {
+    velocity: 1,
+    health: 100,
+    reward: 100
+  },
+  fast: {
+    velocity: 2,
+    health: 50,
+    reward: 150
+  }
+};
 
 export default creepMachine;

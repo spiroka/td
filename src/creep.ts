@@ -7,9 +7,11 @@ export class Creep {
   public x: number = 0;
   public y: number = 0;
   public type: CreepType = 'slow';
+  public reward: number = 0;
   public state: StateValueFrom<typeof creepMachine>;
   public effects: CreepEffect[] = [];
 
+  private deadCallbacks: Array<(creep: Creep) => void> = [];
   private actor: Actor<typeof creepMachine>;
 
   constructor() {
@@ -17,15 +19,22 @@ export class Creep {
     this.actor.start();
     this.state = this.actor.getSnapshot().value;
     this.actor.subscribe(({ context, value }) => {
+      if (value === 'dead' && this.state !== 'dead') {
+        this.deadCallbacks.forEach((cb) => cb(this));
+        this.deadCallbacks = [];
+      }
+
       this.x = context.x;
       this.y = context.y;
       this.type = context.type;
       this.state = value;
       this.effects = context.effects;
+      this.reward = context.reward;
     });
   }
 
   public spawn = (tile: Point, creepType: CreepType) => {
+    this.deadCallbacks = [];
     this.actor.send({ type: 'creep.spawn', tile, creepType });
   };
 
@@ -56,5 +65,9 @@ export class Creep {
 
   public removeEffect = (effect: CreepEffect) => {
     this.actor.send({ type: 'creep.removeEffect', effect });
+  };
+
+  public onDied = (cb: (creep: Creep) => void) => {
+    this.deadCallbacks.push(cb);
   };
 }

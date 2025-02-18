@@ -1,8 +1,8 @@
 import { assign, enqueueActions, setup } from 'xstate';
 
-import { CreepEffect, Point, TowerType } from './types';
-import { Game } from './game';
-import { Creep } from './creep';
+import type { CreepEffect, Point, TowerType } from './types';
+import type { Game } from './game';
+import type { Creep } from './creep';
 import { getDistance, ticker } from './utils';
 import { slow } from './creep-effects';
 

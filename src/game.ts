@@ -11,6 +11,7 @@ export class Game {
   public towers: Tower[] = [];
   public state: StateValueFrom<typeof gameMachine>;
   public lives?: number;
+  public money: number;
 
   private actor: Actor<typeof gameMachine>;
   private updateCallbacks: Array<(game: Game) => void> = [];
@@ -19,48 +20,58 @@ export class Game {
     this.map = map;
     this.actor = createActor(gameMachine);
     this.actor.start();
-    const { value: state, context: { lives } } = this.actor.getSnapshot();
+    const { value: state, context: { lives, money } } = this.actor.getSnapshot();
     this.state = state;
     this.lives = lives;
+    this.money = money;
 
     this.actor.subscribe(({ value, context }) => {
+      if (this.state === 'building' && value === 'playing') {
+        context.creeps?.forEach((creep) => creep.onDied(this.creepDied));
+      }
+
       this.state = value;
       this.creeps = context.creeps || [];
       this.towers = context.towers || [];
       this.lives = context.lives;
+      this.money = context.money;
 
       this.updateCallbacks.forEach(cb => cb(this));
     });
   }
 
-  public update(delta: number) {
+  public update = (delta: number) => {
     this.actor.send({ type: 'game.update', delta });
     this.creeps.forEach((creep) => creep.update(delta, this));
     this.towers.forEach((tower) => tower.update(delta, this));
-  }
+  };
 
-  public start() {
+  public start = () => {
     this.actor.send({ type: 'game.start', map: this.map });
-  }
+  };
 
-  public pause() {
+  public pause = () => {
     this.actor.send({ type: 'game.pause' });
-  }
+  };
 
-  public play() {
+  public play = () => {
     this.actor.send({ type: 'game.play' });
-  }
+  };
 
-  public creepEnter() {
+  public creepEnter = () => {
     this.actor.send({ type: 'game.creepEnter' });
-  }
+  };
 
-  public onUpdate(cb: (game: Game) => void) {
+  public onUpdate = (cb: (game: Game) => void) => {
     this.updateCallbacks.push(cb);
     cb(this);
-  }
+  };
 
-  public placeTower(tower: Tower) {
+  public placeTower = (tower: Tower) => {
     this.actor.send({ type: 'game.placeTower', tower });
-  }
+  };
+
+  public creepDied = (creep: Creep) => {
+    this.actor.send({ type: 'game.creepDied', creep });
+  };
 }

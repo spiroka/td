@@ -15,6 +15,7 @@ export class UI {
   private toolbarContainer = document.getElementById('toolbar')!;
   private gameState: Game['state'];
   private livesEl = document.createElement('div');
+  private moneyEl = document.createElement('div');
   private actor: Actor<typeof uiMachine>;
   private state: StateValueFrom<typeof uiMachine>;
   private selectedTowerType?: TowerType;
@@ -55,12 +56,15 @@ export class UI {
       if (game.lives != null) {
         this.livesEl.textContent = `${game.lives} lives left`;
       }
+
+      this.moneyEl.textContent = `Money: ${game.money}`;
     });
     this.game = game;
     this.uiContainer?.classList.add('ui__container');
     this.overlayContainer.classList.add('overlay__container');
     this.livesEl.classList.add('ui__lives');
-    this.uiContainer?.appendChild(this.livesEl);
+    this.moneyEl.classList.add('ui__money');
+    this.uiContainer?.append(this.livesEl, this.moneyEl);
 
     document.getElementById('game')?.appendChild(this.overlayContainer);
 
