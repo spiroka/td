@@ -2,8 +2,9 @@ import { Actor, createActor, StateValueFrom } from 'xstate';
 
 import type { Game } from './game';
 import type { TowerType } from './types';
+import type { Shop } from './shop';
 import { config } from './config';
-import { buildTower } from './towers';
+import { availableTowerTypes, buildTower } from './towers';
 import { uiMachine } from './ui-machine';
 
 import './styles/ui.css';
@@ -16,12 +17,13 @@ export class UI {
   private gameState: Game['state'];
   private livesEl = document.createElement('div');
   private moneyEl = document.createElement('div');
+  private shopBtn = document.createElement('button');
   private actor: Actor<typeof uiMachine>;
   private state: StateValueFrom<typeof uiMachine>;
   private selectedTowerType?: TowerType;
   private towersLeft: number;
 
-  constructor(game: Game) {
+  constructor(game: Game, shop: Shop) {
     this.gameState = game.state;
     this.actor = createActor(uiMachine);
     this.actor.start();
@@ -64,11 +66,22 @@ export class UI {
     this.overlayContainer.classList.add('overlay__container');
     this.livesEl.classList.add('ui__lives');
     this.moneyEl.classList.add('ui__money');
-    this.uiContainer?.append(this.livesEl, this.moneyEl);
+    this.shopBtn.classList.add('ui__shop');
+    this.shopBtn.textContent = '🏪';
+    this.shopBtn.addEventListener('click', () => {
+      shop.open();
+    });
+    this.uiContainer?.append(this.livesEl, this.moneyEl, this.shopBtn);
 
     document.getElementById('game')?.appendChild(this.overlayContainer);
 
     this.initKeyboard();
+
+    shop.onItemPurchased(() => {
+      if (['building', 'placeTower'].includes(this.state)) {
+        this.showTowers();
+      }
+    });
   }
 
   private initKeyboard = () => {
@@ -117,7 +130,7 @@ export class UI {
     this.toolbarContainer.replaceChildren();
     this.toolbarContainer.className = 'tower-toolbar';
 
-    (['basic', 'ice'] as const).forEach(type => {
+    availableTowerTypes.forEach((type) => {
       const el = document.createElement('div');
       el.textContent = type;
       el.className = 'tower-toolbar__tower';

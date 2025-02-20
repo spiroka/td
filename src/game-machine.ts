@@ -26,9 +26,10 @@ export const gameMachine = setup({
       { type: 'game.update'; delta: number } |
       { type: 'game.creepEnter' } |
       { type: 'game.over' } |
-      { type: 'game.placeTower', tower: Tower } |
+      { type: 'game.placeTower'; tower: Tower } |
       { type: 'game.reset' } |
-      { type: 'game.creepDied', creep: Creep };
+      { type: 'game.creepDied'; creep: Creep } |
+      { type: 'game.spendMoney'; amount: number };
     context: Context;
   }
 }).createMachine({
@@ -37,6 +38,13 @@ export const gameMachine = setup({
   context: {
     lives: 10,
     money: 0
+  },
+  on: {
+    'game.spendMoney': {
+      actions: assign(({ context, event: { amount } }) => ({
+        money: context.money - amount
+      }))
+    }
   },
   states: {
     initial: {

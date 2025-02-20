@@ -3,6 +3,8 @@ import { Tower } from './tower';
 
 let towers: Tower[];
 
+export const availableTowerTypes: TowerType[] = [ 'basic' ];
+
 export function initTowers() {
   const init = new Array(10).fill(undefined);
   towers = init.map(() => new Tower());
@@ -19,4 +21,8 @@ export function buildTower(tile: Point, type: TowerType) {
 export function demolishTower(tower: Tower) {
   tower.reset();
   towers.push(tower);
+}
+
+export function unlockTower(type: TowerType) {
+  availableTowerTypes.push(type);
 }

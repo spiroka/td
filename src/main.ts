@@ -5,10 +5,12 @@ import { Game } from './game';
 import { UI } from './ui';
 import { EmojiRenderer } from './emoji-renderer';
 import { initTowers } from './towers';
+import { Shop } from './shop';
 
 let game: Game;
 let renderer = new EmojiRenderer();
 let ui: UI;
+let shop: Shop;
 
 async function init(onProgress: (progress: string) => void) {
   onProgress('Generating map...');
@@ -21,12 +23,13 @@ async function init(onProgress: (progress: string) => void) {
   initTowers();
 
   game = new Game(map);
+  shop = new Shop(game);
 
   onProgress('Initializing renderer...');
   await renderer.init(game);
 
   onProgress('Initializing UI...');
-  ui = new UI(game);
+  ui = new UI(game, shop);
 }
 
 let prevTimestamp = 0;

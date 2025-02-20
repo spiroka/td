@@ -74,4 +74,8 @@ export class Game {
   public creepDied = (creep: Creep) => {
     this.actor.send({ type: 'game.creepDied', creep });
   };
+
+  public spendMoney = (amount: number) => {
+    this.actor.send({ type: 'game.spendMoney', amount });
+  };
 }

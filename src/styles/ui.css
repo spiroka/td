@@ -10,8 +10,8 @@
   color: white;
   display: grid;
   grid-template-areas:
-    'x x a'
-    'x x c';
+    '. b a'
+    '. . c';
 }
 
 .ui__text {
@@ -55,10 +55,15 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 10px;
+  color: white;
 
   .tower-toolbar__tower {
     display: flex;
     align-items: center;
     justify-content: center;
   }
+}
+
+.ui__shop {
+  grid-area: b;
 }
