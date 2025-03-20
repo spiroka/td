@@ -52,18 +52,41 @@
 }
 
 .tower-toolbar {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
+  width: 100%;
+  height: 100%;
   color: white;
 
-  .tower-toolbar__tower {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .tower-toolbar__tower-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+
+    .tower-toolbar__tower {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 
 .ui__shop {
   grid-area: b;
+  align-self: end;
+}
+
+.shop {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 500px;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    list-style: none;
+    padding: 0
+  }
 }

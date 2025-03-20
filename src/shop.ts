@@ -1,5 +1,6 @@
 import { Game } from './game';
 import { unlockTower } from './towers';
+import { el } from './utils';
 
 const inventory = [
   {
@@ -16,7 +17,7 @@ const inventory = [
 export class Shop {
   private game: Game;
   private dialog = document.getElementById('shop')! as HTMLDialogElement;
-  private shopUl = document.createElement('ul')!;
+  private shopUl = el('ul')!;
   private purchaseCallbacks: (() => void)[] = [];
 
   constructor(game: Game) {
@@ -40,11 +41,10 @@ export class Shop {
 
   private renderShop() {
     const items = inventory.map((item) => {
-      const li = document.createElement('li');
-      const name = document.createElement('span');
-      name.textContent = item.name;
-      const buyBtn = document.createElement('button');
-      buyBtn.textContent = 'Buy';
+      const name = el('span', item.name);
+      const price = el('span', `Price: ${item.price}`);
+      const buyBtn = el('button', 'Buy') as HTMLButtonElement;
+      const li = el('li', [name, price, buyBtn]);
 
       buyBtn.addEventListener('click', () => {
         item.onBuy();
@@ -56,8 +56,6 @@ export class Shop {
       if (!item.available || this.game.money < item.price) {
         buyBtn.disabled = true;
       }
-
-      li.append(name, buyBtn);
 
       return li;
     });

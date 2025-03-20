@@ -6,18 +6,28 @@ import type { Shop } from './shop';
 import { config } from './config';
 import { availableTowerTypes, buildTower } from './towers';
 import { uiMachine } from './ui-machine';
+import { el } from './utils';
 
 import './styles/ui.css';
+
+const towerToolbar = el(
+  'div',
+  [
+    el('h2', 'Select tower to place:'),
+    el('div', null, 'tower-toolbar__tower-container')
+  ],
+  'tower-toolbar'
+);
 
 export class UI {
   private game: Game;
   private uiContainer = document.getElementById('ui')!;
-  private overlayContainer = document.createElement('div');
+  private overlayContainer = el('div', null, 'overlay__container');
   private toolbarContainer = document.getElementById('toolbar')!;
   private gameState: Game['state'];
-  private livesEl = document.createElement('div');
-  private moneyEl = document.createElement('div');
-  private shopBtn = document.createElement('button');
+  private livesEl = el('div', null, 'ui__lives');
+  private moneyEl = el('div', null, 'ui__money');
+  private shopBtn = el('button', 'Shop 🏪', 'ui__shop');
   private actor: Actor<typeof uiMachine>;
   private state: StateValueFrom<typeof uiMachine>;
   private selectedTowerType?: TowerType;
@@ -64,10 +74,6 @@ export class UI {
     this.game = game;
     this.uiContainer?.classList.add('ui__container');
     this.overlayContainer.classList.add('overlay__container');
-    this.livesEl.classList.add('ui__lives');
-    this.moneyEl.classList.add('ui__money');
-    this.shopBtn.classList.add('ui__shop');
-    this.shopBtn.textContent = '🏪';
     this.shopBtn.addEventListener('click', () => {
       shop.open();
     });
@@ -101,11 +107,11 @@ export class UI {
   };
 
   private pause = () => {
-    const pauseElement = document.createElement('div');
-    pauseElement.classList.add('ui__text');
-    const text = document.createElement('h1');
-    text.textContent = 'PAUSED';
-    pauseElement.appendChild(text);
+    const pauseElement = el(
+      'div',
+      el('h1', 'PAUSED'),
+      'ui__text'
+    );
     this.overlayContainer.replaceChildren(pauseElement);
   };
 
@@ -114,11 +120,11 @@ export class UI {
   };
 
   private gameOver = () => {
-    const gameOverElement = document.createElement('div');
-    gameOverElement.classList.add('ui__text');
-    const text = document.createElement('h1');
-    text.textContent = 'GAME OVER';
-    gameOverElement.appendChild(text);
+    const gameOverElement = el(
+      'div',
+      el('h1', 'GAME OVER'),
+      'ui__text'
+    );
     this.overlayContainer.replaceChildren(gameOverElement);
   };
 
@@ -127,17 +133,16 @@ export class UI {
   };
 
   private showTowers = () => {
-    this.toolbarContainer.replaceChildren();
-    this.toolbarContainer.className = 'tower-toolbar';
+    this.toolbarContainer.replaceChildren(towerToolbar);
+    const towersContainer = towerToolbar.querySelector('.tower-toolbar__tower-container')!;
+    towersContainer.replaceChildren();
 
     availableTowerTypes.forEach((type) => {
-      const el = document.createElement('div');
-      el.textContent = type;
-      el.className = 'tower-toolbar__tower';
-      el.onclick = () => {
+      const towerEl = el('div', type, 'tower-toolbar__tower');
+      towerEl.onclick = () => {
         this.actor.send({ type: 'ui.selectTower', towerType: type });
       };
-      this.toolbarContainer.appendChild(el);
+      towersContainer.appendChild(towerEl);
     });
   };
 
@@ -150,12 +155,12 @@ export class UI {
       const { x, y, type } = tile;
 
       if (type === 'terrain') {
-        let el = document.createElement('div');
-        el.setAttribute('style', `
+        let terrainEl = el('div');
+        terrainEl.setAttribute('style', `
           grid-area: ${y + 1} / ${x + 1} / ${y + 2} / ${x + 2};
         `);
-        el.onclick = () => {
-          el.remove();
+        terrainEl.onclick = () => {
+          terrainEl.remove();
           const tower = buildTower(tile, this.selectedTowerType!);
           this.game.placeTower(tower);
           this.actor.send({ type: 'ui.placeTower' });
@@ -165,12 +170,11 @@ export class UI {
             this.game.play();
           }
         };
-        elements.push(el);
+        elements.push(terrainEl);
       }
     }
 
-    let overlay = document.createElement('div');
-    overlay.classList.add('ui__building-overlay');
+    let overlay = el('div', null, 'ui__building-overlay');
     overlay.setAttribute('style', `
       --width: ${config.width};
       --height: ${config.height};

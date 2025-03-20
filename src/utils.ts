@@ -52,3 +52,23 @@ export function ticker(fn: () => void, delay: number) {
     }
   };
 }
+
+export function el(tagName: string, children?: string | Node | Node[] | null, className?: string) {
+  const element = document.createElement(tagName);
+
+  if (className) {
+    element.className = className;
+  }
+
+  if (children) {
+    if (typeof children === 'string') {
+      element.textContent = children;
+    } else if (Array.isArray(children)) {
+      element.append(...children);
+    } else {
+      element.append(children);
+    }
+  }
+
+  return element;
+}
