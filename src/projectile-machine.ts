@@ -45,8 +45,8 @@ const creepMachine = setup({
           actions: enqueueActions(({ enqueue, event, context }) => {
             const dirX = context.target!.x - context.x > 0 ? 1 : -1;
             const dirY = context.target!.y - context.y > 0 ? 1 : -1;
-            const velX = (context.velocity / event.delta) * dirX;
-            const velY = (context.velocity / event.delta) * dirY;
+            const velX = (context.velocity * (event.delta / 1000)) * dirX;
+            const velY = (context.velocity * (event.delta / 1000)) * dirY;
 
             enqueue.assign({
               x: context.x + velX,
