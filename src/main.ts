@@ -6,6 +6,7 @@ import { UI } from './ui';
 import { EmojiRenderer } from './emoji-renderer';
 import { initTowers } from './towers';
 import { Shop } from './shop';
+import { initProjectiles } from './projectiles';
 
 let game: Game;
 let renderer = new EmojiRenderer();
@@ -21,6 +22,9 @@ async function init(onProgress: (progress: string) => void) {
 
   onProgress('Building towers...');
   initTowers();
+
+  onProgress('Launching projectiles...');
+  await initProjectiles();
 
   game = new Game(map);
   shop = new Shop(game);

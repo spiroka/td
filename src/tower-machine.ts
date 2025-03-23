@@ -5,6 +5,7 @@ import type { Game } from './game';
 import type { Creep } from './creep';
 import { getDistance, ticker } from './utils';
 import { slow } from './creep-effects';
+import { launchProjectile } from './projectiles';
 
 type Context = {
   x: number;
@@ -88,14 +89,11 @@ export const towerMachine = setup({
     },
     attacking: {
       entry: assign(({ context }) => ({
-        attackTicker: ticker(() => {
-          context.target?.takeDamage(context.damage);
-
+        attackTicker: ticker((game: Game) => {
           const effectCreator = effectCreatorByType[context.type];
+          const projectile = launchProjectile(context.x, context.y, context.target!, context.damage, effectCreator?.());
 
-          if (effectCreator) {
-            context.target?.applyEffect(effectCreator());
-          }
+          game.projectileLaunched(projectile);
         }, context.attackSpeed / 1 * 1000)
       })),
       on: {
@@ -106,7 +104,7 @@ export const towerMachine = setup({
             if (distance > context.range || context.target?.state !== 'creeping') {
               enqueue.raise({ type: 'tower.targetLost' });
             } else {
-              context.attackTicker?.update(event.delta);
+              context.attackTicker?.update(event.delta, event.game);
             }
           })
         },

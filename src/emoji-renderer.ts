@@ -3,14 +3,18 @@ import type { Creep } from './creep';
 import type { Game } from './game';
 import type { Tower } from './tower';
 import type { CreepEffect, CreepType, Renderer, TowerType } from './types';
+import type { Projectile } from './projectile';
+import { el } from './utils';
 
 import './styles/renderer.css';
 
 export class EmojiRenderer implements Renderer {
-  private container = document.createElement('div');
+  private container = el('div', null, 'creep-container');
+  private projectileContainer = el('div', null, 'projectile-container');
   private particleContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   private creepElements = new WeakMap<Creep, HTMLDivElement>();
   private towerElements = new WeakMap<Tower, HTMLDivElement>();
+  private projectileElements = new WeakMap<Projectile, HTMLElement>();
   private projectiles = new Map<Tower, SVGPathElement>();
   private currentState?: Game['state'];
   private tileSize: number = 0;
@@ -31,15 +35,13 @@ export class EmojiRenderer implements Renderer {
       this.currentState = state;
     });
 
-    this.container.classList.add('creep-container');
     this.particleContainer.classList.add('particle-container');
 
     this.container.setAttribute('style', `
       --width: ${config.width};
       --height: ${config.height};
     `);
-    document.getElementById('game')?.appendChild(this.container);
-    document.getElementById('game')?.appendChild(this.particleContainer);
+    document.getElementById('game')?.append(this.container, this.projectileContainer, this.particleContainer);
     this.tileSize = this.container.getBoundingClientRect().width / config.width;
 
     this.renderMap(game);
@@ -48,6 +50,7 @@ export class EmojiRenderer implements Renderer {
   public render = (game: Game, _delta: number) => {
     this.renderCreeps(game);
     this.renderTowers(game);
+    this.renderProjectiles(game);
   };
 
   private renderCreeps = (game: Game) => {
@@ -90,7 +93,7 @@ export class EmojiRenderer implements Renderer {
         this.towerElements.set(tower, el);
       }
 
-      this.renderProjectiles(tower);
+      this.renderProjectiles(game);
 
       el.setAttribute('style', `
         grid-area: ${Math.floor(tower.y + 1)} / ${Math.floor(tower.x + 1)} / ${Math.floor(tower.y + 2)} / ${Math.floor(tower.x + 2)};
@@ -98,29 +101,26 @@ export class EmojiRenderer implements Renderer {
     });
   }
 
-  private renderProjectiles = (tower: Tower) => {
-    if (tower.target) {
-      let path = this.projectiles.get(tower);
-
-      if (!path) {
-        path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('stroke', 'white');
-        path.setAttribute('stroke-dasharray', '1 10')
-        this.particleContainer.appendChild(path);
-        this.projectiles.set(tower, path);
+  private renderProjectiles = (game: Game) => {
+    game.projectiles.forEach((projectile) => {
+      if (projectile.state !== 'moving') {
+        this.projectileElements.get(projectile)?.remove();
+        return;
       }
 
-      path.setAttribute('d', `
-        M ${tower.x * this.tileSize + this.tileSize / 2} ${tower.y * this.tileSize + this.tileSize / 2}
-        L ${tower.target.x * this.tileSize + this.tileSize / 2} ${tower.target.y * this.tileSize + this.tileSize / 2}
+      let proj = this.projectileElements.get(projectile);
+
+      if (!proj) {
+        proj = el('p', '.', 'projectile');
+        this.projectileContainer.appendChild(proj);
+        this.projectileElements.set(projectile, proj);
+      }
+
+      proj.setAttribute('style', `
+        top: calc(${(projectile.y / config.height) * 100}% + 0.5em);
+        left: calc(${(projectile.x / config.width) * 100}% + 0.5em);
       `);
-    } else {
-      let path = this.projectiles.get(tower);
-
-      if (path) {
-        path.setAttribute('d', '');
-      }
-    }
+    });
   };
 
   private renderMap = (game: Game) => {

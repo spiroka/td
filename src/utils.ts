@@ -1,3 +1,4 @@
+import { Game } from './game';
 import { Point } from './types';
 
 export async function batchProcess<T extends (param: any, index: number) => any>(
@@ -39,14 +40,14 @@ export function getDistance(point1: Point, point2: Point) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-export function ticker(fn: () => void, delay: number) {
+export function ticker(fn: (game: Game) => void, delay: number) {
   let elapsed = 0;
 
   return {
-    update: (delta: number) => {
+    update: (delta: number, game: Game) => {
       elapsed += delta;
       if (elapsed >= delay) {
-        fn();
+        fn(game);
         elapsed = 0;
       }
     }

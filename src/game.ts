@@ -4,11 +4,13 @@ import type { TDMap } from './types';
 import type { Creep } from './creep';
 import type { Tower } from './tower';
 import { gameMachine } from './game-machine';
+import { Projectile } from './projectile';
 
 export class Game {
   public map: TDMap;
   public creeps: Creep[] = [];
   public towers: Tower[] = [];
+  public projectiles: Projectile[] = [];
   public state: StateValueFrom<typeof gameMachine>;
   public lives?: number;
   public money: number;
@@ -33,6 +35,7 @@ export class Game {
       this.state = value;
       this.creeps = context.creeps || [];
       this.towers = context.towers || [];
+      this.projectiles = context.projectiles || [];
       this.lives = context.lives;
       this.money = context.money;
 
@@ -41,7 +44,8 @@ export class Game {
   }
 
   public update = (delta: number) => {
-    this.actor.send({ type: 'game.update', delta });
+    this.actor.send({ type: 'game.update', delta, game: this });
+    this.projectiles.forEach((projectile) => projectile.update(delta, this));
     this.creeps.forEach((creep) => creep.update(delta, this));
     this.towers.forEach((tower) => tower.update(delta, this));
   };
@@ -77,5 +81,9 @@ export class Game {
 
   public spendMoney = (amount: number) => {
     this.actor.send({ type: 'game.spendMoney', amount });
+  };
+
+  public projectileLaunched = (projectile: Projectile) => {
+    this.actor.send({ type: 'game.projectileLaunched', projectile });
   };
 }

@@ -6,6 +6,15 @@
   grid-template-rows: repeat(var(--height), 1fr);
 }
 
+.projectile-container {
+  position: absolute;
+  inset: 0;
+}
+
+.projectile {
+  position: absolute;
+}
+
 .particle-container {
   position: absolute;
   width: 100%;

@@ -7,12 +7,16 @@ import { ticker } from './utils';
 import { levels } from './levels';
 import { returnCreep, spawnCreep } from './creeps';
 import { demolishTower } from './towers';
+import { Projectile } from './projectile';
+import { Game } from './game';
+import { returnProjectile } from './projectiles';
 
 type Context = {
   creeps?: Creep[];
   towers?: Tower[];
   map?: TDMap;
   creepTicker?: ReturnType<typeof ticker>;
+  projectiles?: Projectile[];
   lives: number;
   money: number;
 };
@@ -23,13 +27,14 @@ export const gameMachine = setup({
       { type: 'game.start'; map: TDMap } |
       { type: 'game.play' } |
       { type: 'game.pause' } |
-      { type: 'game.update'; delta: number } |
+      { type: 'game.update'; delta: number; game: Game } |
       { type: 'game.creepEnter' } |
       { type: 'game.over' } |
       { type: 'game.placeTower'; tower: Tower } |
       { type: 'game.reset' } |
       { type: 'game.creepDied'; creep: Creep } |
-      { type: 'game.spendMoney'; amount: number };
+      { type: 'game.spendMoney'; amount: number } |
+      { type: 'game.projectileLaunched'; projectile: Projectile };
     context: Context;
   }
 }).createMachine({
@@ -94,7 +99,7 @@ export const gameMachine = setup({
               }
             }, 500);
 
-            return { creeps, creepTicker };
+            return { creeps, creepTicker, projectiles: [] };
           }),
           target: 'playing'
         }
@@ -105,7 +110,7 @@ export const gameMachine = setup({
         'game.pause': 'paused',
         'game.update': {
           actions: enqueueActions(({ event, context, enqueue }) => {
-            context.creepTicker?.update(event.delta);
+            context.creepTicker?.update(event.delta, event.game);
             const roundWon = context.creeps?.every((creep) => creep.state === 'dead');
 
             if (roundWon) {
@@ -133,13 +138,25 @@ export const gameMachine = setup({
         'game.over': 'over',
         'game.reset': {
           target: 'building',
-          actions: assign(({ context: { creeps, towers } }) => {
+          actions: assign(({ context: { creeps, towers, projectiles } }) => {
             creeps?.forEach(returnCreep);
             towers?.forEach(demolishTower);
+            projectiles?.forEach(returnProjectile);
 
             return {
               creeps: [],
               towers: []
+            };
+          })
+        },
+        'game.projectileLaunched': {
+          actions: assign(({ event: { projectile }, context }) => {
+            const projectiles = context.projectiles || [];
+
+            projectiles.push(projectile);
+
+            return {
+              projectiles: context.projectiles
             };
           })
         }
