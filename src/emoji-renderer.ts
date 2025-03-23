@@ -57,6 +57,11 @@ export class EmojiRenderer implements Renderer {
     game.creeps.forEach((creep) => {
       let el = this.creepElements.get(creep);
 
+      if (!['dead', 'creeping'].includes(creep.state)) {
+        el?.remove();
+        return;
+      }
+
       if (!el) {
         el = document.createElement('div');
         el.classList.add('creep');

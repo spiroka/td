@@ -3,11 +3,12 @@ import { assign, enqueueActions, setup } from 'xstate';
 import type { Game } from './game';
 import type { Creep } from './creep';
 import { CreepEffect } from './types';
+import { getDistance } from './utils';
 
 const defaultContext = {
   x: 0,
   y: 0,
-  velocity: 1,
+  velocity: 5,
   target: null as Creep | null,
   effect: undefined as CreepEffect | undefined,
   damage: 0
@@ -43,14 +44,25 @@ const creepMachine = setup({
       on: {
         'projectile.update': {
           actions: enqueueActions(({ enqueue, event, context }) => {
-            const dirX = context.target!.x - context.x > 0 ? 1 : -1;
-            const dirY = context.target!.y - context.y > 0 ? 1 : -1;
-            const velX = (context.velocity * (event.delta / 1000)) * dirX;
-            const velY = (context.velocity * (event.delta / 1000)) * dirY;
+            const d = getDistance(context, context.target!);
+
+            if (d < 0.2) {
+              context.target?.takeDamage(context.damage);
+
+              if (context.effect) {
+                context.target?.applyEffect(context.effect);
+              }
+
+              enqueue.raise({ type: 'projectile.reset' });
+
+              return;
+            }
+
+            const t = (event.delta / 1000) * context.velocity / d;
 
             enqueue.assign({
-              x: context.x + velX,
-              y: context.y + velY
+              x: context.x + t * (context.target!.x - context.x),
+              y: context.y + t * (context.target!.y - context.y)
             });
           })
         },

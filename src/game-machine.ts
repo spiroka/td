@@ -111,7 +111,7 @@ export const gameMachine = setup({
         'game.update': {
           actions: enqueueActions(({ event, context, enqueue }) => {
             context.creepTicker?.update(event.delta, event.game);
-            const roundWon = context.creeps?.every((creep) => creep.state === 'dead');
+            const roundWon = context.creeps?.every((creep) => ['dead', 'onBench'].includes(creep.state));
 
             if (roundWon) {
               enqueue.raise({ type: 'game.reset' });

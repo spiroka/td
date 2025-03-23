@@ -10,8 +10,7 @@
   color: white;
   display: grid;
   grid-template-areas:
-    '. b a'
-    '. . c';
+    'b . . a c';
 }
 
 .ui__text {
@@ -72,6 +71,7 @@
 .ui__shop {
   grid-area: b;
   align-self: end;
+  justify-self: flex-start;
 }
 
 .shop {

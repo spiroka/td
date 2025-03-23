@@ -60,20 +60,22 @@ const creepMachine = setup({
     creeping: {
       on: {
         'creep.update': {
-          actions: assign(({ event, context: self }) => {
+          actions: enqueueActions(({ enqueue, event, context: self }) => {
             const { game, delta } = event;
             const { path } = game.map;
 
             if (getDistance(self, game.map.end) < 0.5) {
               game.creepEnter();
+
+              enqueue.raise({ type: 'creep.reset' });
             }
 
             const newPosition = calculateNewPosition(self, path, delta, self.getVelocity());
 
-            return {
+            enqueue.assign({
               x: newPosition.x,
               y: newPosition.y
-            };
+            });
           })
         },
         'creep.takeDamage': {

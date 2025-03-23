@@ -54,7 +54,7 @@ export function ticker(fn: (game: Game) => void, delay: number) {
   };
 }
 
-export function el(tagName: string, children?: string | Node | Node[] | null, className?: string) {
+export function el(tagName: string, children?: string |  Node | Array<Node | string> | null, className?: string) {
   const element = document.createElement(tagName);
 
   if (className) {

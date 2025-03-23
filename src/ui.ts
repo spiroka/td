@@ -66,10 +66,16 @@ export class UI {
 
       this.gameState = state;
       if (game.lives != null) {
-        this.livesEl.textContent = `${game.lives} lives left`;
+        const heart = el('span');
+        heart.innerHTML = '&#9829;&nbsp;';
+        const content = el('span', [
+          heart,
+          String(game.lives)
+        ]);
+        this.livesEl.replaceChildren(content);
       }
 
-      this.moneyEl.textContent = `Money: ${game.money}`;
+      this.moneyEl.textContent = `$${game.money}`;
     });
     this.game = game;
     this.uiContainer?.classList.add('ui__container');

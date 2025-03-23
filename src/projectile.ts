@@ -4,7 +4,6 @@ import projectileMachine from './projectile-machine';
 import { Creep } from './creep';
 import { Game } from './game';
 import { CreepEffect } from './types';
-import { getDistance } from './utils';
 import { returnProjectile } from './projectiles';
 
 export class Projectile {
@@ -13,9 +12,6 @@ export class Projectile {
   public state: StateValueFrom<typeof projectileMachine>;
 
   private actor: Actor<typeof projectileMachine>;
-  private target: Creep | null = null;
-  private damage: number = 0;
-  private effect?: CreepEffect;
 
   constructor() {
     this.actor = createActor(projectileMachine);
@@ -24,9 +20,11 @@ export class Projectile {
     this.actor.subscribe(({ context, value }) => {
       this.x = context.x;
       this.y = context.y;
-      this.target = context.target;
-      this.damage = context.damage;
-      this.effect = context.effect;
+
+      if (this.state === 'moving' && value === 'initial') {
+        returnProjectile(this);
+      }
+
       this.state = value;
     });
   }
@@ -36,17 +34,6 @@ export class Projectile {
   };
 
   public update = (delta: number, game: Game) => {
-    if (getDistance(this, this.target!) < 0.2) {
-      this.target?.takeDamage(this.damage);
-      if (this.effect) {
-        this.target?.applyEffect(this.effect);
-      }
-
-      returnProjectile(this);
-
-      return;
-    }
-
     this.actor.send({ type: 'projectile.update', delta, game });
   };
 

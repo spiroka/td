@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TD</title>
     <style>
+      @font-face {
+        font-family: 'Departure Mono';
+        src: url('/DepartureMono-Regular.woff2');
+      }
+
       body {
         margin: 0;
         padding: 0;
@@ -15,16 +20,20 @@
         justify-content: center;
         align-items: center;
         background-color: darkslategray;
-        font-family: monospace;
+      }
+
+      body * {
+        font-family: 'Departure Mono', monospace;
       }
 
       #container {
         display: grid;
-        grid-template-columns: 500px 250px;
+        grid-template-columns: 500px;
         grid-template-areas:
-          "game ui"
-          "toolbar toolbar";
-        width: 750px;
+          "ui"
+          "game"
+          "toolbar";
+        width: 500px;
         padding: 20px;
         background-color: rgb(0 0 0 / 0.5);
         border-radius: 10px;
