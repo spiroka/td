@@ -1,9 +1,9 @@
 import { assign, enqueueActions, setup } from 'xstate';
 
-import type { Game } from './game';
-import type { Creep } from './creep';
-import { CreepEffect } from './types';
-import { getDistance } from './utils';
+import type { Game } from '../game';
+import type { Creep } from '../creeps';
+import { CreepEffect } from '../types';
+import { getDistance } from '../utils';
 
 const defaultContext = {
   x: 0,

@@ -1,10 +1,9 @@
 import { assign, enqueueActions, setup } from 'xstate';
 
-import type { CreepEffect, Point, TowerType } from './types';
-import type { Game } from './game';
-import type { Creep } from './creep';
-import { getDistance, ticker } from './utils';
-import { slow } from './creep-effects';
+import type { CreepEffect, Point, TowerType } from '../types';
+import type { Game } from '../game';
+import { Creep, slow } from '../creeps';
+import { getDistance, ticker } from '../utils';
 import { launchProjectile } from './projectiles';
 
 type Context = {

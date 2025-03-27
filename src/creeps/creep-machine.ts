@@ -1,8 +1,8 @@
 import { assign, enqueueActions, setup } from 'xstate';
 
-import { CreepEffect, CreepType, Point } from './types';
-import { getDistance } from './utils';
-import { Game } from './game';
+import { CreepEffect, CreepType, Point } from '../types';
+import { getDistance } from '../utils';
+import { Game } from '../game';
 import { isSlowEffect } from './creep-effects';
 
 const defaultContext = {
@@ -31,7 +31,8 @@ const creepMachine = setup({
       { type: 'creep.reset' } |
       { type: 'creep.kill' } |
       { type: 'creep.addEffect', effect: CreepEffect } |
-      { type: 'creep.removeEffect', effect: CreepEffect };
+      { type: 'creep.removeEffect', effect: CreepEffect } |
+      { type: 'creep.enter' };
     context: typeof defaultContext;
   }
 }).createMachine({
@@ -64,10 +65,8 @@ const creepMachine = setup({
             const { game, delta } = event;
             const { path } = game.map;
 
-            if (getDistance(self, game.map.end) < 0.5) {
-              game.creepEnter();
-
-              enqueue.raise({ type: 'creep.reset' });
+            if (getDistance(self, game.map.end) < 0.2) {
+              enqueue.raise({ type: 'creep.enter' });
             }
 
             const newPosition = calculateNewPosition(self, path, delta, self.getVelocity());
@@ -98,6 +97,11 @@ const creepMachine = setup({
           }))
         },
         'creep.kill': 'dead',
+        'creep.enter': 'entered'
+      }
+    },
+    entered: {
+      on: {
         'creep.reset': 'onBench'
       }
     },

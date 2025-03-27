@@ -1,9 +1,9 @@
 import { Actor, createActor, StateValueFrom } from 'xstate';
 
-import type { Point, TowerType } from './types';
-import type { Game } from './game';
+import type { Point, TowerType } from '../types';
+import type { Game } from '../game';
 import { towerMachine } from './tower-machine'
-import { Creep } from './creep';
+import { Creep } from '../creeps';
 
 export class Tower {
   public x: number = 0;

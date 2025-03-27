@@ -1,14 +1,16 @@
 import { Actor, createActor, StateValueFrom } from 'xstate';
 
-import type { Game } from './game';
-import type { TowerType } from './types';
-import type { Shop } from './shop';
-import { config } from './config';
-import { availableTowerTypes, buildTower } from './towers';
+import type { Game } from '../game';
+import type { TowerType } from '../types';
+import type { Shop } from '../shop';
+import { config } from '../config';
+import { availableTowerTypes, buildTower } from '../towers';
 import { uiMachine } from './ui-machine';
-import { el } from './utils';
+import { el } from '../utils';
+import messageHub from '../message-hub';
+import { Messages } from '../messages';
 
-import './styles/ui.css';
+import '../styles/ui.css';
 
 const towerToolbar = el(
   'div',
@@ -99,15 +101,15 @@ export class UI {
   private initKeyboard = () => {
     document.addEventListener('keydown', e => {
       if (e.key === ' ' && this.game.state === 'initial') {
-        this.game.start();
+        messageHub.emit(Messages.start());
       }
 
       if (e.key === 'Escape' && this.game.state === 'playing') {
-        this.game.pause();
+        messageHub.emit(Messages.pause());
       }
 
       if (e.key === ' ' && this.game.state === 'paused') {
-        this.game.play();
+        messageHub.emit(Messages.play());
       }
     });
   };

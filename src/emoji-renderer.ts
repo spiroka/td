@@ -1,9 +1,9 @@
 import { config } from './config';
-import type { Creep } from './creep';
+import type { Creep } from './creeps';
 import type { Game } from './game';
-import type { Tower } from './tower';
 import type { CreepEffect, CreepType, Renderer, TowerType } from './types';
-import type { Projectile } from './projectile';
+import type { Projectile } from './towers';
+import type { Tower } from './towers';
 import { el } from './utils';
 
 import './styles/renderer.css';
@@ -17,7 +17,6 @@ export class EmojiRenderer implements Renderer {
   private projectileElements = new WeakMap<Projectile, HTMLElement>();
   private projectiles = new Map<Tower, SVGPathElement>();
   private currentState?: Game['state'];
-  private tileSize: number = 0;
 
   public init = async (game: Game) => {
     this.currentState = game.state;
@@ -42,7 +41,6 @@ export class EmojiRenderer implements Renderer {
       --height: ${config.height};
     `);
     document.getElementById('game')?.append(this.container, this.projectileContainer, this.particleContainer);
-    this.tileSize = this.container.getBoundingClientRect().width / config.width;
 
     this.renderMap(game);
   };

@@ -1,7 +1,7 @@
-import { Creep } from './creep';
+import { Creep } from '../creeps';
 import { Projectile } from './projectile';
-import { CreepEffect } from './types';
-import { batchProcess } from './utils';
+import { CreepEffect } from '../types';
+import { batchProcess } from '../utils';
 
 let projectiles: Projectile[] = [];
 

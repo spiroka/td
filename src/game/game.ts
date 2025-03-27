@@ -1,10 +1,10 @@
 import { Actor, createActor, StateValueFrom } from 'xstate';
 
-import type { TDMap } from './types';
-import type { Creep } from './creep';
-import type { Tower } from './tower';
+import type { TDMap } from '../types';
+import type { Creep } from '../creeps';
+import type { Tower, Projectile } from '../towers';
 import { gameMachine } from './game-machine';
-import { Projectile } from './projectile';
+import messageHub from '../message-hub';
 
 export class Game {
   public map: TDMap;
@@ -41,6 +41,11 @@ export class Game {
 
       this.updateCallbacks.forEach(cb => cb(this));
     });
+
+    messageHub.on('creepEntered', this.creepEnter);
+    messageHub.on('pause', this.pause);
+    messageHub.on('start', this.start);
+    messageHub.on('play', this.play);
   }
 
   public update = (delta: number) => {

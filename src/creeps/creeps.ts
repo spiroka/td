@@ -1,6 +1,6 @@
-import { batchProcess } from './utils';
+import { batchProcess } from '../utils';
 import { Creep } from './creep';
-import { CreepType, Point } from './types';
+import { CreepType, Point } from '../types';
 
 let creeps: Creep[];
 

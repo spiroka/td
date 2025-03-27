@@ -1,4 +1,4 @@
-import type { Point, TowerType } from './types';
+import type { Point, TowerType } from '../types';
 import { Tower } from './tower';
 
 let towers: Tower[];

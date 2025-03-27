@@ -1,7 +1,9 @@
 import { Actor, createActor, StateValueFrom } from 'xstate';
 import creepMachine from './creep-machine';
-import { CreepEffect, CreepType, Point } from './types';
-import { Game } from './game';
+import { CreepEffect, CreepType, Point } from '../types';
+import { Game } from '../game';
+import messageHub from '../message-hub';
+import { Messages } from '../messages';
 
 export class Creep {
   public x: number = 0;
@@ -22,6 +24,10 @@ export class Creep {
       if (value === 'dead' && this.state !== 'dead') {
         this.deadCallbacks.forEach((cb) => cb(this));
         this.deadCallbacks = [];
+      }
+
+      if (value === 'entered' && this.state !== 'entered') {
+        this.enter();
       }
 
       this.x = context.x;
@@ -69,5 +75,10 @@ export class Creep {
 
   public onDied = (cb: (creep: Creep) => void) => {
     this.deadCallbacks.push(cb);
+  };
+
+  private enter = () => {
+    messageHub.emit(Messages.creepEntered(this));
+    this.reset();
   };
 }

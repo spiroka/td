@@ -1,4 +1,4 @@
-import type { Creep } from './creep';
+import type { Creep } from './creeps';
 import type { Game } from './game';
 
 export type Point = {

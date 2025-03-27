@@ -1,5 +1,6 @@
 import { assign, enqueueActions, setup } from 'xstate';
-import type { TowerType } from './types';
+
+import type { TowerType } from '../types';
 
 export const uiMachine = setup({
   types: {} as {

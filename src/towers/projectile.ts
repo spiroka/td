@@ -1,9 +1,9 @@
 import { Actor, createActor, StateValueFrom } from 'xstate';
 
 import projectileMachine from './projectile-machine';
-import { Creep } from './creep';
-import { Game } from './game';
-import { CreepEffect } from './types';
+import { Creep } from '../creeps';
+import { Game } from '../game';
+import { CreepEffect } from '../types';
 import { returnProjectile } from './projectiles';
 
 export class Projectile {

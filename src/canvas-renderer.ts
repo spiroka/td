@@ -1,5 +1,5 @@
 import { config } from './config';
-import { Creep } from './creep';
+import { Creep } from './creeps';
 import { Game } from './game';
 import { Renderer, TDMap } from './types';
 

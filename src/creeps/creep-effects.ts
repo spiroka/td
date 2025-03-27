@@ -1,7 +1,5 @@
 import type { Creep } from './creep';
-import type { CreepEffect, SlowEffect } from './types';
-
-function noop() { }
+import type { CreepEffect, SlowEffect } from '../types';
 
 export function slow(duration: number, multiplier: number): SlowEffect {
   return {

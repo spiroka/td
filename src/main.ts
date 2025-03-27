@@ -1,12 +1,11 @@
 import { generateMap } from './map-generator';
-import { canvasRenderer } from './canvas-renderer';
 import { initCreeps } from './creeps';
 import { Game } from './game';
 import { UI } from './ui';
 import { EmojiRenderer } from './emoji-renderer';
 import { initTowers } from './towers';
 import { Shop } from './shop';
-import { initProjectiles } from './projectiles';
+import { initProjectiles } from './towers';
 
 let game: Game;
 let renderer = new EmojiRenderer();

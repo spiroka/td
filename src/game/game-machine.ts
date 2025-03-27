@@ -1,15 +1,12 @@
 import { assign, enqueueActions, setup } from 'xstate';
 
-import type { Creep } from './creep';
-import type { CreepType, TDMap } from './types';
-import type { Tower } from './tower';
-import { ticker } from './utils';
-import { levels } from './levels';
-import { returnCreep, spawnCreep } from './creeps';
-import { demolishTower } from './towers';
-import { Projectile } from './projectile';
+import type { CreepType, TDMap } from '../types';
+import type { Tower } from '../towers';
+import { ticker } from '../utils';
+import { levels } from '../levels';
+import { returnCreep, spawnCreep, Creep } from '../creeps';
+import { Projectile, returnProjectile, demolishTower } from '../towers';
 import { Game } from './game';
-import { returnProjectile } from './projectiles';
 
 type Context = {
   creeps?: Creep[];
