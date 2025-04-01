@@ -1,5 +1,6 @@
 import { Game } from './game';
-import { unlockTower } from './towers';
+import messageHub from './message-hub';
+import { Messages } from './messages';
 import { el } from './utils';
 
 const inventory = [
@@ -9,7 +10,7 @@ const inventory = [
     available: true,
     onBuy() {
       this.available = false;
-      unlockTower('ice');
+      messageHub.emit(Messages.unlockTower('ice'));
     }
   }
 ];
