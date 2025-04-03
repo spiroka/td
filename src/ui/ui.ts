@@ -34,6 +34,8 @@ export class UI {
   private state: StateValueFrom<typeof uiMachine>;
   private selectedTowerType?: TowerType;
   private towersLeft: number;
+  private money: number = 0;
+  private lives: number = 0;
 
   constructor(game: Game, shop: Shop) {
     this.gameState = game.state;
@@ -67,21 +69,30 @@ export class UI {
       }
 
       this.gameState = state;
-      if (game.lives != null) {
-        const heart = el('span');
-        heart.innerHTML = '&#9829;&nbsp;';
-        const content = el('span', [
-          heart,
-          String(game.lives)
-        ]);
-        this.livesEl.replaceChildren(content);
+
+      if (this.money !== game.money) {
+        this.money = game.money;
+        this.updateMoney();
       }
 
-      this.moneyEl.textContent = `$${game.money}`;
+      if (this.lives !== game.lives) {
+        this.lives = game.lives || 0;
+        this.updateLives();
+      }
     });
+
+    this.updateLives();
+    this.updateMoney();
     this.game = game;
     this.uiContainer?.classList.add('ui__container');
     this.overlayContainer.classList.add('overlay__container');
+
+    this.overlayContainer.append(el(
+      'div',
+      el('h1', 'Press SPACE to start'),
+      'ui__text'
+    ));
+
     this.shopBtn.addEventListener('click', () => {
       shop.open();
     });
@@ -194,5 +205,19 @@ export class UI {
 
   private hideBuildingOverlay = () => {
     this.overlayContainer.replaceChildren();
+  };
+
+  private updateMoney = () => {
+    this.moneyEl.textContent = `$${this.money}`;
+  };
+
+  private updateLives = () => {
+      const heart = el('span');
+      heart.innerHTML = '&#9829;&nbsp;';
+      const content = el('span', [
+        heart,
+        String(this.lives)
+      ]);
+      this.livesEl.replaceChildren(content);
   };
 }

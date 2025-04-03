@@ -151,12 +151,12 @@ function calculateNewPosition(currentPosition: Point, path: Point[], delta: numb
 
 const creepTypeTemplates: Record<CreepType, Partial<typeof defaultContext>> = {
   slow: {
-    velocity: 1,
+    velocity: 2,
     health: 100,
     reward: 100
   },
   fast: {
-    velocity: 2,
+    velocity: 4,
     health: 50,
     reward: 150
   }

@@ -28,10 +28,6 @@ export class Game {
     this.money = money;
 
     this.actor.subscribe(({ value, context }) => {
-      if (this.state === 'building' && value === 'playing') {
-        context.creeps?.forEach((creep) => creep.onDied(this.creepDied));
-      }
-
       this.state = value;
       this.creeps = context.creeps || [];
       this.towers = context.towers || [];
@@ -43,6 +39,7 @@ export class Game {
     });
 
     messageHub.on('creepEntered', this.creepEnter);
+    messageHub.on('creepDied', ({ creep }) => this.creepDied(creep));
     messageHub.on('pause', this.pause);
     messageHub.on('start', this.start);
     messageHub.on('play', this.play);

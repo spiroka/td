@@ -12,8 +12,8 @@ class MessageHub {
     this.listeners[messageType].push(callback);
   };
 
-  public emit = <T extends MessageType>(message: Message<T>) => {
-    this.listeners[message.type]?.forEach((cb) => cb(message.payload));
+  public emit = <T extends MessageType>({ type, ...payload }: Message<T>) => {
+    this.listeners[type]?.forEach((cb) => cb(payload));
   };
 }
 

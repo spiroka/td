@@ -13,7 +13,6 @@ export class Creep {
   public state: StateValueFrom<typeof creepMachine>;
   public effects: CreepEffect[] = [];
 
-  private deadCallbacks: Array<(creep: Creep) => void> = [];
   private actor: Actor<typeof creepMachine>;
 
   constructor() {
@@ -22,8 +21,7 @@ export class Creep {
     this.state = this.actor.getSnapshot().value;
     this.actor.subscribe(({ context, value }) => {
       if (value === 'dead' && this.state !== 'dead') {
-        this.deadCallbacks.forEach((cb) => cb(this));
-        this.deadCallbacks = [];
+        messageHub.emit(Messages.creepDied(this));
       }
 
       if (value === 'entered' && this.state !== 'entered') {
@@ -40,7 +38,6 @@ export class Creep {
   }
 
   public spawn = (tile: Point, creepType: CreepType) => {
-    this.deadCallbacks = [];
     this.actor.send({ type: 'creep.spawn', tile, creepType });
   };
 
@@ -71,10 +68,6 @@ export class Creep {
 
   public removeEffect = (effect: CreepEffect) => {
     this.actor.send({ type: 'creep.removeEffect', effect });
-  };
-
-  public onDied = (cb: (creep: Creep) => void) => {
-    this.deadCallbacks.push(cb);
   };
 
   private enter = () => {

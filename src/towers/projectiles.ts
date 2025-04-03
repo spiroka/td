@@ -20,6 +20,5 @@ export function launchProjectile(x: number, y: number, target: Creep, damage: nu
 }
 
 export function returnProjectile(projectile: Projectile) {
-  projectile.reset();
   projectiles.push(projectile);
 }

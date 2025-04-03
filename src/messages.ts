@@ -3,6 +3,7 @@ import { TowerType } from './types';
 
 const creepMessages = {
   creepEntered: (creep: Creep) => ({ type: 'creepEntered', creep }) as const,
+  creepDied: (creep: Creep) => ({ type: 'creepDied', creep }) as const
 };
 
 const gameMessages = {
@@ -24,7 +25,7 @@ export const Messages = {
 export type MessageType = keyof typeof Messages;
 
 export type MessagePayloads = {
-  [K in keyof typeof Messages]: Omit<typeof Messages[K], 'type'>;
+  [K in keyof typeof Messages]: Omit<ReturnType<typeof Messages[K]>, 'type'>;
 };
 
 export type Message<T extends MessageType> = {

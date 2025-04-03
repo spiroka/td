@@ -8,7 +8,7 @@ import { getDistance } from '../utils';
 const defaultContext = {
   x: 0,
   y: 0,
-  velocity: 5,
+  velocity: 10,
   target: null as Creep | null,
   effect: undefined as CreepEffect | undefined,
   damage: 0

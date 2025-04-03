@@ -33,8 +33,8 @@ export const towerMachine = setup({
     x: 0,
     y: 0,
     type: 'basic',
-    damage: 25,
-    attackSpeed: 0.5,
+    damage: 50,
+    attackSpeed: 3,
     range: 10
   },
   states: {
@@ -93,7 +93,7 @@ export const towerMachine = setup({
           const projectile = launchProjectile(context.x, context.y, context.target!, context.damage, effectCreator?.());
 
           game.projectileLaunched(projectile);
-        }, context.attackSpeed / 1 * 1000)
+        }, 1000 / context.attackSpeed)
       })),
       on: {
         'tower.update': {
@@ -122,13 +122,13 @@ export const towerMachine = setup({
 
 const towerTypeTemplates = {
   basic: {
-    damage: 25,
-    attackSpeed: 0.5,
+    damage: 50,
+    attackSpeed: 5,
     range: 10
   },
   ice: {
-    damage: 10,
-    attackSpeed: 0.5,
+    damage: 25,
+    attackSpeed: 5,
     range: 10
   }
 };

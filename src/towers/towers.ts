@@ -1,3 +1,4 @@
+import messageHub from '../message-hub';
 import type { Point, TowerType } from '../types';
 import { Tower } from './tower';
 
@@ -8,6 +9,7 @@ export const availableTowerTypes: TowerType[] = [ 'basic' ];
 export function initTowers() {
   const init = new Array(10).fill(undefined);
   towers = init.map(() => new Tower());
+  messageHub.on('unlockTower', ({ towerType }) => unlockTower(towerType));
 }
 
 export function buildTower(tile: Point, type: TowerType) {

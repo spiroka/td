@@ -8,11 +8,11 @@ function generateRandomMap() {
 
   let obstacleCount = config.mapObstacleCount;
 
-  const startY = Math.floor(Math.random() * config.height);
-  const endY = Math.floor(Math.random() * config.height);
+  const startX = Math.floor(Math.random() * config.height);
+  const endX = Math.floor(Math.random() * config.height);
 
-  map[startY][0] = -1;
-  map[endY][config.width - 1] = -2;
+  map[0][startX] = -1;
+  map[config.height - 1][endX] = -2;
 
   function getObsctacle() {
     const x = Math.floor(Math.random() * config.width);
@@ -27,7 +27,7 @@ function generateRandomMap() {
     obstacleCount--;
   }
 
-  return { map, start: { x: 0, y: startY }, end: { x: config.width - 1, y: endY } };
+  return { map, start: { x: startX, y: 0 }, end: { x: endX, y: config.height - 1 } };
 }
 
 type Node = Point & { parent?: Point, cost?: number };
